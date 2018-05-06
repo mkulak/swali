@@ -1,0 +1,8 @@
+keystore.p12
+application.properties
+.idea
+*.log
+project
+target
+build
+

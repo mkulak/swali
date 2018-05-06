@@ -1,0 +1,134 @@
+swagger: '2.0'
+
+info:
+ title: Swali
+ description: Swagger Linter
+ version: "1.0"
+ contact:
+   email: kleshney@gmail.com
+
+host: "ijgf82g4o9.execute-api.us-west-2.amazonaws.com"
+
+schemes:
+  - https
+
+basePath: /api
+
+parameters:
+  LintingRequest:
+
+paths:
+  '/violations':
+    post:
+      summary:
+        API Violations
+      description: |
+        The API Violations endpoint validates given Swagger Specification
+        against the rules defined in *Zalando* RESTful API Guidelines
+        (http://zalando.github.io/restful-api-guidelines/). The response
+        includes the list of violations for API spec submitted
+      parameters:
+        - name: Request
+          in: body
+          description: Linting Request
+          required: true
+          schema:
+            $ref: '#/definitions/LintingRequest'
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: API swagger is OK
+          schema:
+            $ref: '#/definitions/LintingResponse'
+        400:
+          description: Input file not parsable
+          schema:
+            $ref: 'https://zalando.github.io/problem/schema.yaml#/Problem'
+        default:
+          description: Error description
+          schema:
+            $ref: 'https://zalando.github.io/problem/schema.yaml#/Problem'
+
+definitions:
+  LintingRequest:
+    type: object
+    description: Request containing a swagger definition file
+    properties:
+      api_definition:
+        type: object
+      api_definition_url:
+        type: string
+      ignoreRules:
+        type: array
+        items:
+          type: string
+
+  LintingResponse:
+    type: object
+    description: Linting Response
+    required:
+      - violations
+    properties:
+      violations:
+        type: array
+        items:
+          $ref: '#/definitions/Violation'
+      message:
+        type: string
+      violations_count:
+        $ref: '#/definitions/ViolationsCount'
+
+  Violation:
+    type: object
+    description: Violation Object
+    required:
+      - title
+      - description
+      - violation_type
+    properties:
+      title:
+        type: string
+      description:
+        type: string
+      violation_type:
+        type: string
+        x-extensible-enum:
+        - MUST
+        - SHOULD
+        - MAY
+        - HINT
+      rule_link:
+        type: string
+      paths:
+        type: array
+        items:
+          type: string
+
+  ViolationsCount:
+    type: object
+    description: Violation Count
+    required:
+      - must
+      - should
+      - may
+      - could
+      - hint
+    properties:
+      must:
+        type: integer
+        format: int32
+      should:
+        type: integer
+        format: int32
+      may:
+        type: integer
+        format: int32
+      could:
+        type: integer
+        format: int32
+      hint:
+        type: integer
+        format: int32
