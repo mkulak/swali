@@ -58,7 +58,7 @@ definitions:
     description: Request containing a swagger definition file
     properties:
       api_definition:
-        type: object
+        type: string
       api_definition_url:
         type: string
       ignoreRules:

@@ -31,6 +31,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile 'com.amazonaws:aws-lambda-java-core:1.2.0'
     compile 'com.amazonaws:aws-lambda-java-events:2.0.1'
+    compile "io.swagger:swagger-parser:1.0.35"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.5"
     testCompile 'junit:junit:4.12'
 }
 
