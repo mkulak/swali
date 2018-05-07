@@ -8,15 +8,14 @@ import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 
-val mapper = ObjectMapper().registerModule(KotlinModule())
-    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-    .configure(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS, false)
-    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
-
-
 class Main : RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    val apiLinter = ApiLinter()
+    val apiLinter = Linter()
+
+    val mapper = ObjectMapper().registerModule(KotlinModule())
+        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+        .configure(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS, false)
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
 
     override fun handleRequest(request: APIGatewayProxyRequestEvent?, context: Context): APIGatewayProxyResponseEvent {
         context.logger.log("received: $request")
@@ -38,7 +37,6 @@ class Main : RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponse
         }
     }
 }
-
 
 fun main(args: Array<String>) {
     println("koo!")
