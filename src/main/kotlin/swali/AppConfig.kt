@@ -41,25 +41,3 @@ val config = AppConfig(
         "all" to    setOf(200, 301, 400, 401, 403, 404, 405, 406, 408, 410, 428, 429, 500, 501, 503)
     )
 )
-
-//AvoidSynonymsRule {
-//    dictionary {
-//        customer_id:  [customerid, c_id, cid, custid, cust_id]
-//        order_id:     [orderid, o_id, ord_id]
-//        payment_id:   [paymentid, p_id]
-//        parcel_id:    [parcelid]
-//        article_id:   [articleid, a_id, art_id]
-//    }
-//}
-//AvoidJavascriptKeywordsRule {
-//    blacklist: [break, do, in, typeof, case, else, instanceof, var, catch, export, new, void, class, extends, return,
-//    while, const, finally, super, with, continue, for, switch, yield, debugger, function, this, default,
-//    if, throw, delete, import, try]
-//}
-//
-//
-//
-//InvalidApiSchemaRule {
-//    swagger_schema_url: "http://swagger.io/v2/schema.json"
-//}
-//
