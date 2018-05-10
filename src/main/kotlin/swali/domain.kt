@@ -1,7 +1,8 @@
 package swali
 
 data class LintingRequest(
-    val apiDefinition: String, //TODO: support api definition url
+    val apiDefinition: String?,
+    val apiDefinitionUrl: String?,
     val ignoreRules: Array<String>?
 )
 
