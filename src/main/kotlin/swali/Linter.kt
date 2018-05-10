@@ -3,11 +3,11 @@ package swali
 import io.swagger.parser.Swagger20Parser
 
 
-class Linter {
+class Linter(val rules: List<Rule>) {
     fun doLint(request: LintingRequest): LintingResponse =
         try {
             val swagger = Swagger20Parser().parse(request.apiDefinition)
-            val violations = allRules.mapNotNull { it.validate(swagger) }
+            val violations = rules.mapNotNull { it.validate(swagger) }
             violations.toResponse()
         } catch (e: Exception) {
             listOf(invalidApiViolation).toResponse()
