@@ -1,8 +1,8 @@
 package swali
 
 import io.swagger.models.Swagger
-import swali.zalando.*
-import swali.zally.*
+import swali.rules.zalando.*
+import swali.rules.zally.*
 
 interface Rule {
     val id: String
