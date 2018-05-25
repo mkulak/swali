@@ -1,10 +1,10 @@
 package swali.rules.zalando
 
-import de.zalando.zally.util.getAllJsonObjects
 import io.swagger.models.Swagger
 import io.swagger.models.parameters.AbstractSerializableParameter
 import io.swagger.models.parameters.Parameter
 import swali.*
+import swali.utils.getAllJsonObjects
 
 class FormatForNumbersRule(val numberFormats: Map<String, List<String>>) : Rule {
     val title = "Define Format for Type Number and Integer"

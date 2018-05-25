@@ -1,9 +1,9 @@
 package swali.rules.zalando
 
-import de.zalando.zally.util.getAllJsonObjects
 import io.swagger.models.Swagger
 import io.swagger.models.properties.Property
 import swali.*
+import swali.utils.getAllJsonObjects
 
 class CommonFieldTypesRule(val commonFields: Map<String, Pair<String, String>>) : Rule {
     val title = "Use common field names"

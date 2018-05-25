@@ -1,6 +1,7 @@
-package de.zalando.zally.util
+package swali.utils
 
 import io.swagger.models.*
+import io.swagger.models.auth.OAuth2Definition
 import io.swagger.models.parameters.BodyParameter
 import io.swagger.models.properties.*
 
@@ -61,4 +62,24 @@ private fun Swagger.findJsonObjects(model: Model?, path: String, visitedPaths: M
                 findJsonObjects(model.parent, path, visitedPaths) +
                 findJsonObjects(model.child, path, visitedPaths)
         else -> emptyList()
+    }
+
+
+fun Swagger.getDefinedScopes(): Set<Pair<String, String>> =
+    securityDefinitions.orEmpty().entries.flatMap { (group, def) ->
+        (def as? OAuth2Definition)?.scopes.orEmpty().keys.map { scope -> group to scope }
+    }.toSet()
+
+fun extractAppliedScopes(operation: Operation): Set<Pair<String, String>> =
+    operation.security.orEmpty().flatMap { groupDefinition ->
+        groupDefinition.orEmpty().entries.flatMap { (group, scopes) ->
+            scopes.orEmpty().map { scope -> group to scope }
+        }
+    }.toSet()
+
+fun Swagger.hasTopLevelScope(definedScopes: Set<Pair<String, String>>): Boolean =
+    security.orEmpty().any { securityRequirement ->
+        securityRequirement.requirements.entries.any { (group, scopes) ->
+            scopes.any { scope -> (group to scope) in definedScopes }
+        }
     }

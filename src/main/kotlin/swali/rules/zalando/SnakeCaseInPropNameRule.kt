@@ -1,12 +1,12 @@
 package swali.rules.zalando
 
-import de.zalando.zally.util.getAllJsonObjects
 import io.swagger.models.Swagger
 import swali.*
 import swali.utils.PatternUtil
+import swali.utils.getAllJsonObjects
 
 
-class SnakeCaseInPropNameRule(val whitelist: Set<String>) : Rule {
+class kSnakeCaseInPropNameRule(val whitelist: Set<String>) : Rule {
     val title = "snake_case property names"
     val violationType = ViolationType.MUST
     override val id = "118"

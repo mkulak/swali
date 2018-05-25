@@ -1,9 +1,9 @@
 package swali.rules.zalando
 
-import de.zalando.zally.util.getAllJsonObjects
 import io.swagger.models.Swagger
 import swali.*
 import swali.utils.WordUtils.isPlural
+import swali.utils.getAllJsonObjects
 
 class PluralizeNamesForArraysRule : Rule {
     val title = "Array names should be pluralized"
