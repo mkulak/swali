@@ -1,7 +1,8 @@
+package swali
+
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.Test
-import swali.*
 import kotlin.test.assertEquals
 
 class MainTest {
