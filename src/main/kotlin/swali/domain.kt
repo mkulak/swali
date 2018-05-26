@@ -3,7 +3,7 @@ package swali
 data class LintingRequest(
     val apiDefinition: String?,
     val apiDefinitionUrl: String?,
-    val ignoreRules: Array<String>?
+    val ignoreRules: List<String>?
 )
 
 data class LintingResponse (

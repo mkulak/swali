@@ -10,7 +10,7 @@ class MainTest {
         val req = LintingRequest(
             apiDefinition = "Body",
             apiDefinitionUrl = null,
-            ignoreRules = arrayOf("a", "foo")
+            ignoreRules = listOf("a", "foo")
         )
         val apiReq = APIGatewayProxyRequestEvent().apply { body = mapper.writeValueAsString(req) }
         val expectedResponse = LintingResponse(

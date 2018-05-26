@@ -1,17 +1,23 @@
 package swali.rules.zalando
 
-import swali.Violation
-import swali.ViolationType
+import io.swagger.models.Swagger
+import swali.*
 import swali.utils.PatternUtil
+import swali.utils.extractHeaders
 
 
-class HyphenateHttpHeadersRule(headersWhitelist: Set<String>) : HttpHeadersRule(headersWhitelist) {
+class HyphenateHttpHeadersRule(val headersWhitelist: Set<String>) : Rule {
     val title = "Use Hyphenated HTTP Headers"
+    val desc = "Header names should be hyphenated"
     val violationType = ViolationType.MUST
     override val id = "131"
 
-    override fun isViolation(header: String) = !PatternUtil.isHyphenated(header)
-
-    override fun createViolation(paths: List<String>): Violation =
-        Violation(title, "Header names should be hyphenated", violationType, id, paths)
+    override fun validate(swagger: Swagger): Violation? {
+        val allHeaders = swagger.extractHeaders()
+        val paths = allHeaders
+            .filter { it.second !in headersWhitelist && !PatternUtil.isHyphenated(it.second) }
+            .map { it.first + " " + it.second }
+            .distinct()
+        return if (paths.isNotEmpty()) Violation(title, desc, violationType, ruleLink(id), paths) else null
+    }
 }

@@ -3,6 +3,7 @@ package swali.utils
 import io.swagger.models.*
 import io.swagger.models.auth.OAuth2Definition
 import io.swagger.models.parameters.BodyParameter
+import io.swagger.models.parameters.Parameter
 import io.swagger.models.properties.*
 
 data class ObjectDefinition(val definition: Map<String, Property>, val path: String)
@@ -83,3 +84,21 @@ fun Swagger.hasTopLevelScope(definedScopes: Set<Pair<String, String>>): Boolean 
             scopes.any { scope -> (group to scope) in definedScopes }
         }
     }
+
+
+fun Swagger.extractHeaders(): List<Pair<String, String>> {
+    fun Collection<Parameter>?.extractHeaders() =
+        orEmpty().filter { it.`in` == "header" }.map { it.name }
+
+    fun Collection<Response>?.extractHeaders() =
+        orEmpty().flatMap { it.headers?.keys.orEmpty() }
+
+    val fromParams = parameters.orEmpty().values.extractHeaders().map { "parameters" to it }
+    val fromPaths = paths.orEmpty().entries.flatMap { (path, def) ->
+        val headerNames = def.parameters.extractHeaders() + def.operations.flatMap { operation ->
+            operation.parameters.extractHeaders() + operation.responses.values.extractHeaders()
+        }
+        headerNames.map { path to it}
+    }
+    return fromParams + fromPaths
+}

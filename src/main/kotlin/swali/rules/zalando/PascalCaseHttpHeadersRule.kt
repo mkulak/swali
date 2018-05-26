@@ -1,17 +1,22 @@
 package swali.rules.zalando
 
-import swali.Violation
-import swali.ViolationType
+import io.swagger.models.Swagger
+import swali.*
 import swali.utils.PatternUtil
+import swali.utils.extractHeaders
 
-class PascalCaseHttpHeadersRule(headersWhitelist: Set<String>) : HttpHeadersRule(headersWhitelist) {
+class PascalCaseHttpHeadersRule(val headersWhitelist: Set<String>) : Rule {
     val title = "Prefer Hyphenated-Pascal-Case for HTTP header fields"
+    val desc = "Header is not Hyphenated-Pascal-Case"
     val violationType = ViolationType.SHOULD
     override val id = "132"
 
-    override fun isViolation(header: String) = !PatternUtil.isHyphenatedPascalCase(header)
-
-    override fun createViolation(paths: List<String>): Violation {
-        return Violation(title, "Header is not Hyphenated-Pascal-Case", violationType, id, paths)
+    override fun validate(swagger: Swagger): Violation? {
+        val allHeaders = swagger.extractHeaders()
+        val paths = allHeaders
+            .filter { it.second !in headersWhitelist && !PatternUtil.isHyphenatedPascalCase(it.second) }
+            .map { it.first + " " + it.second }
+            .distinct()
+        return if (paths.isNotEmpty()) Violation(title, desc, violationType, ruleLink(id), paths) else null
     }
 }

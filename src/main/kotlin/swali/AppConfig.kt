@@ -10,7 +10,8 @@ data class AppConfig(
     val subresourcesLimit: Int,
     val standardErrorCodes: Set<Int>,
     val snakeCaseInPropNameWhiteList: Set<String>,
-    val allowedStatuses: Map<String, Set<Int>>
+    val allowedStatuses: Map<String, Set<Int>>,
+    val pluralWhitelist: Set<String>
 )
 
 val config = AppConfig(
@@ -39,5 +40,6 @@ val config = AppConfig(
         "patch" to  setOf(202, 303, 409, 412, 415, 423),
         "delete" to setOf(202, 204, 303, 409, 412, 415, 423),
         "all" to    setOf(200, 301, 400, 401, 403, 404, 405, 406, 408, 410, 428, 429, 500, 501, 503)
-    )
+    ),
+    pluralWhitelist = setOf("vat", "api", "apis")
 )
