@@ -35,6 +35,7 @@ val allRules = listOf(
     SecureWithFlowAppRule(),
     SecureWithOAuthRule(),
     NoUndefinedScopesRule(),
+    NoUnsecuredEndpointsRule(),
     SnakeCaseForQueryParamsRule(),
     SnakeCaseInPropNameRule(config.snakeCaseInPropNameWhiteList),
     SuccessResponseAsJsonObjectRule(),
