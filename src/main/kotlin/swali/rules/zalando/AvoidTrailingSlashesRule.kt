@@ -9,7 +9,7 @@ class AvoidTrailingSlashesRule : Rule {
     val title = "Avoid Trailing Slashes"
     val violationType = ViolationType.MUST
     override val id = "136"
-    private val DESCRIPTION = "Rule avoid trailing slashes is not followed"
+    private val DESCRIPTION = "Found trailing slashes"
 
     override fun validate(swagger: Swagger): Violation? {
         val paths = swagger.paths.orEmpty().keys.filter { it != null && PatternUtil.hasTrailingSlash(it) }

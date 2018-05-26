@@ -9,7 +9,7 @@ data class AppConfig(
     val pathsCountLimit: Int,
     val subresourcesLimit: Int,
     val standardErrorCodes: Set<Int>,
-    val snakeCaseInPropNameWhitelIst: Set<String>,
+    val snakeCaseInPropNameWhiteList: Set<String>,
     val allowedStatuses: Map<String, Set<Int>>
 )
 
@@ -31,7 +31,7 @@ val config = AppConfig(
     pathsCountLimit = 8,
     subresourcesLimit = 3,
     standardErrorCodes = setOf(401, 403, 404, 405, 406, 408, 413, 414, 415, 500, 502, 503, 504),
-    snakeCaseInPropNameWhitelIst = setOf("_links"),
+    snakeCaseInPropNameWhiteList = setOf("_links"),
     allowedStatuses = mapOf(
         "get" to    setOf(304),
         "post" to   setOf(201, 202, 207, 303),
