@@ -9,7 +9,7 @@ import swali.ViolationType.MUST
 class SecureWithHttpsRule : Rule {
     override val id = "104"
     val title = "Secure Endpoints with OAuth 2.0"
-    val description = "OAuth2 should be only used together with https"
+    val description = "OAuth2 must be only used together with https"
 
     override fun validate(swagger: Swagger): Violation? {
         val containsHttpScheme = Scheme.HTTP in swagger.schemes.orEmpty()

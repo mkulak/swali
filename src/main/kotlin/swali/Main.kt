@@ -76,19 +76,3 @@ fun downloadFile(url: URL): String =
 
 
 class BadRequestException(message: String) : RuntimeException(message)
-
-fun main(args: Array<String>) {
-    if (args.isEmpty()) {
-        println("Specify path to swagger file as first argument")
-        return
-    }
-    val lintingRequest = LintingRequest(
-//        apiDefinition = File(args.first()).readText(),
-        apiDefinition = null,
-        apiDefinitionUrl = args.first(),
-        ignoreRules = null
-    )
-    val request = ApiRequest().apply { body = mapper.writeValueAsString(lintingRequest) }
-    val response = handle(request, linter, {})
-    println(response.body)
-}

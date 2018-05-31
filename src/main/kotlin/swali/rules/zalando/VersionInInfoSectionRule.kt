@@ -19,6 +19,6 @@ class VersionInInfoSectionRule : Rule {
             !isVersion(version) -> "Specified version has incorrect format: $version"
             else -> null
         }
-        return desc?.let { Violation(title, "$DESCRIPTION $it", violationType, id, emptyList()) }
+        return if (desc != null) Violation(title, "$DESCRIPTION $desc", violationType, id, emptyList())  else null
     }
 }
