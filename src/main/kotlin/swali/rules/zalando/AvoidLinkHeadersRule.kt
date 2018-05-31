@@ -13,10 +13,9 @@ class AvoidLinkHeadersRule(val headersWhitelist: Set<String>) : Rule {
 
     override fun validate(swagger: Swagger): Violation? {
         val allHeaders = swagger.extractHeaders()
-        val paths = allHeaders
+        val (paths, _) = allHeaders
             .filter { it.second !in headersWhitelist && it.second == "Link" }
-            .map { it.first + " " + it.second }
-            .distinct()
-        return if (paths.isNotEmpty()) Violation(title, desc, violationType, ruleLink(id), paths) else null
+            .unzip()
+        return if (paths.isNotEmpty()) Violation(title, desc, violationType, ruleLink(id), paths.distinct()) else null
     }
 }

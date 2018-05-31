@@ -3,7 +3,6 @@ package swali.utils
 object PatternUtil {
     private val LOWER_CASE_HYPHENS_PATTERN = "^[a-z-]*$".toRegex()
     private val HYPHENATED_PASCAL_CASE_PATTERN = "^[A-Z][a-z0-9]*(?:-[A-Z][a-z0-9]+)*$".toRegex()
-    private val HYPHENATED_PATTERN = "^[A-Za-z0-9.]+(-[A-Za-z0-9.]+)*$".toRegex()
     private val SNAKE_CASE_PATTERN = "^[a-z0-9]+(?:_[a-z0-9]+)*$".toRegex()
     private val VERSION_IN_URL_PATTERN = "(.*)/v[0-9]+(.*)".toRegex()
     private val PATH_VARIABLE_PATTERN = "\\{.+\\}$".toRegex()
@@ -20,8 +19,6 @@ object PatternUtil {
     fun isHyphenatedPascalCase(input: String): Boolean = input.matches(HYPHENATED_PASCAL_CASE_PATTERN)
 
     fun isSnakeCase(input: String): Boolean = input.matches(SNAKE_CASE_PATTERN)
-
-    fun isHyphenated(input: String): Boolean = input.matches(HYPHENATED_PATTERN)
 
     fun hasVersionInUrl(input: String): Boolean = input.matches(VERSION_IN_URL_PATTERN)
 

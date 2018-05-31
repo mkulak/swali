@@ -25,7 +25,6 @@ class AvoidLinkHeadersRuleTest {
         val violation = rule.validate(swagger)!!
         assertThat(violation.violationType).isEqualTo(ViolationType.MUST)
         assertThat(violation.paths).hasSameElementsAs(
-            listOf("/product-put-requests/{product_path} Link", "/products Link"))
-
+            listOf("/product-put-requests/{product_path}", "/products"))
     }
 }

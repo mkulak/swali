@@ -5,8 +5,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import swali.*
 
-class PascalCaseHttpHeadersRuleTest {
-    val rule = PascalCaseHttpHeadersRule(config.headersWhiteList)
+class HyphenatePascalCaseHeadersRuleTest {
+    val rule = HyphenatePascalCaseHeadersRule(config.headersWhiteList)
 
     @Test
     fun simplePositiveCase() {
@@ -16,21 +16,24 @@ class PascalCaseHttpHeadersRuleTest {
 
     @Test
     fun simpleNegativeCase() {
-        val swagger = swaggerWithHeaderParams("kebap-case-name")
+        val swagger = swaggerWithHeaderParams("kebap-case-name", "CamelCaseName")
         val result = rule.validate(swagger)!!
-        assertThat(result.paths).hasSameElementsAs(listOf("parameters kebap-case-name"))
+        assertThat(result.paths).hasSameElementsAs(listOf("parameters"))
+        assertThat(result.description).contains("kebap-case-name", "CamelCaseName")
     }
 
     @Test
-    fun mustAcceptETag() {
-        val swagger = swaggerWithHeaderParams("ETag")
+    fun mustAcceptValuesFromWhitelist() {
+        val swagger = swaggerWithHeaderParams("ETag", "X-Trace-ID")
         assertThat(rule.validate(swagger)).isNull()
     }
 
     @Test
     fun mustAcceptZalandoHeaders() {
-        val swagger = swaggerWithHeaderParams("X-Flow-ID", "X-UID", "X-Tenant-ID", "X-Sales-Channel", "X-Frontend-Type",
-            "X-Device-Type", "X-Device-OS", "X-App-Domain")
+        val swagger = swaggerWithHeaderParams(
+            "X-Flow-ID", "X-UID", "X-Tenant-ID", "X-Sales-Channel", "X-Frontend-Type",
+            "X-Device-Type", "X-Device-OS", "X-App-Domain"
+        )
         assertThat(rule.validate(swagger)).isNull()
     }
 
@@ -41,15 +44,17 @@ class PascalCaseHttpHeadersRuleTest {
     }
 
     @Test
+    fun emptySwaggerShouldPass() {
+        val swagger = Swagger()
+        assertThat(rule.validate(swagger)).isNull()
+    }
+
+    @Test
     fun mustAcceptDigits() {
         val swagger = swaggerWithHeaderParams("X-P1n-Id")
         assertThat(rule.validate(swagger)).isNull()
     }
 
-    @Test
-    fun emptySwaggerShouldPass() {
-        assertThat(rule.validate(Swagger())).isNull()
-    }
 
     @Test
     fun positiveCaseSpp() {
@@ -63,4 +68,3 @@ class PascalCaseHttpHeadersRuleTest {
         assertThat(rule.validate(swagger)).isNull()
     }
 }
-
