@@ -1,6 +1,8 @@
 package swali.utils
 
+import javatools.parsers.PlingStemmer
+
 
 object WordUtils {
-    fun isPlural(s: String): Boolean = s.isNotEmpty() //TODO: implement
+    fun isPlural(word: String): Boolean = PlingStemmer.isPlural(word)
 }

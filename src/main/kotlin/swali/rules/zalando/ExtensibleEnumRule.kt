@@ -19,7 +19,7 @@ class ExtensibleEnumRule : Rule {
         val enumNames = (properties.keys + parameters.keys).distinct()
         val enumPaths = (properties.values + parameters.values).distinct()
         return if (enumNames.isNotEmpty()) Violation(title,
-                "Properties/Parameters $enumNames are not extensible enums", violationType, id, enumPaths)
+                "Properties/Parameters $enumNames are not extensible enums", violationType, ruleLink(id), enumPaths)
         else null
     }
 

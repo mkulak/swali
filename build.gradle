@@ -33,6 +33,8 @@ dependencies {
     compile "com.amazonaws:aws-lambda-java-events:2.0.1"
     compile "io.swagger:swagger-parser:1.0.35"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.5"
+    compile "de.mpg.mpi-inf:javatools:1.0.1"
+    testCompile("org.assertj:assertj-core:3.7.0")
     testCompile "junit:junit:4.12"
     testCompile "org.jetbrains.kotlin:kotlin-test-junit:1.1.4-3"
 }
