@@ -10,7 +10,7 @@ interface Linter {
 class LinterImpl(val rules: List<Rule>) : Linter {
     override fun doLint(apiDefinition: String, ignoreRules: Set<String>): LintingResponse {
         val swagger = try {
-            Swagger20Parser().parse(apiDefinition)
+            Swagger20Parser().parse(apiDefinition)!!
         } catch (e: Exception) {
             return listOf(invalidApiViolation).toResponse()
         }

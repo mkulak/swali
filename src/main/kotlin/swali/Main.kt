@@ -38,9 +38,9 @@ fun handle(request: ApiRequest?, linter: Linter, log: (String) -> Unit): ApiResp
         }
     } catch (e: Exception) {
         log("WARN: bad request ${request?.body} | exception: $e")
-        val message = (e as? BadRequestException)?.message ?: "internal server error"
+        val (code, message) = if (e is BadRequestException) 400 to e.message else 500 to "internal server error"
         ApiResponse().apply {
-            statusCode = 400
+            statusCode = code
             headers = mapOf("Content-Type" to "application/json")
             body = mapper.writeValueAsString(mapOf("status" to 400, "title" to message))
         }

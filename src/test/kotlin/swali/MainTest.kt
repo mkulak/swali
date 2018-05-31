@@ -2,8 +2,10 @@ package swali
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.fasterxml.jackson.module.kotlin.readValue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.fail
 
 class MainTest {
     @Test
@@ -35,6 +37,29 @@ class MainTest {
         val res = handle(apiReq, linter, {})
         assertEquals(200, res.statusCode)
         assertEquals(expectedResponse, mapper.readValue(res.body))
+    }
+
+    @Test
+    fun `bad request`() {
+        val apiReq = APIGatewayProxyRequestEvent().apply { body = "invalid request" }
+        val linter = DummyLinter { apiDef, ignores -> fail() }
+        val res = handle(apiReq, linter, {})
+        assertEquals(400, res.statusCode)
+        assertThat(res.body).contains("Can't parse request body")
+    }
+
+    @Test
+    fun `internal server error`() {
+        val req = LintingRequest(
+            apiDefinition = "Body",
+            apiDefinitionUrl = null,
+            ignoreRules = listOf("a", "foo")
+        )
+        val apiReq = APIGatewayProxyRequestEvent().apply { body = mapper.writeValueAsString(req) }
+        val linter = DummyLinter { apiDef, ignores -> throw NullPointerException() }
+        val res = handle(apiReq, linter, {})
+        assertEquals(500, res.statusCode)
+        assertThat(res.body).contains("internal server error")
     }
 }
 
