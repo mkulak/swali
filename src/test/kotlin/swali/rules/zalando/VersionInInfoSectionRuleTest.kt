@@ -19,21 +19,21 @@ class VersionInInfoSectionRuleTest {
     @Test
     fun emptySwagger() {
         val result = rule.validate(Swagger())!!
-        assertThat(result.description).contains("Version is missing")
+        assertThat(result.description).contains("Define API version ")
     }
 
     @Test
     fun missingVersion() {
         val swagger = Swagger().apply { info = Info() }
         val result = rule.validate(swagger)!!
-        assertThat(result.description).contains("Version is missing")
+        assertThat(result.description).contains("Define API version ")
     }
 
     @Test
     fun wrongVersionFormat() {
         val swagger = swaggerWithVersion("1.2.3-a")
         val result = rule.validate(swagger)!!
-        assertThat(result.description).contains("Specified version has incorrect format")
+        assertThat(result.description).contains("#/info/version has incorrect format")
     }
 
     @Test

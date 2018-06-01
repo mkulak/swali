@@ -6,19 +6,16 @@ import swali.utils.PatternUtil.isVersion
 
 
 class VersionInInfoSectionRule : Rule {
-    val title = "Provide version information"
-    val violationType = ViolationType.SHOULD
+    val title = "Use semantic versioning"
     override val id = "116"
-    val DESCRIPTION =
-        "Only the documentation, not the API itself, needs version information. It should be in the format MAJOR.MINOR.DRAFT."
 
     override fun validate(swagger: Swagger): Violation? {
         val version = swagger.info?.version
         val desc = when {
-            version == null -> "Version is missing"
-            !isVersion(version) -> "Specified version has incorrect format: $version"
+            version == null -> "Define API version in #/info/version section"
+            !isVersion(version) -> "#/info/version has incorrect format. Should be <MAJOR>.<MINOR>.<PATCH>"
             else -> null
         }
-        return if (desc != null) Violation(title, "$DESCRIPTION $desc", violationType, id, emptyList())  else null
+        return if (desc != null) Violation(title, desc, ViolationType.SHOULD, id, emptyList()) else null
     }
 }
