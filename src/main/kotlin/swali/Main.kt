@@ -33,7 +33,10 @@ fun handle(request: ApiRequest?, linter: Linter, log: (String) -> Unit): ApiResp
         val response = linter.doLint(apiDefinition, ignoreRules)
         ApiResponse().apply {
             statusCode = 200
-            headers = mapOf("Content-Type" to "application/json")
+            headers = mapOf(
+                "Content-Type" to "application/json",
+                "Access-Control-Allow-Origin" to "*"
+            )
             body = mapper.writeValueAsString(response)
         }
     } catch (e: Exception) {
