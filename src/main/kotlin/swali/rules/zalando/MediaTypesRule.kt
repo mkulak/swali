@@ -6,10 +6,10 @@ import swali.utils.PatternUtil.isApplicationJsonOrProblemJson
 import swali.utils.PatternUtil.isCustomMediaTypeWithVersioning
 
 class MediaTypesRule : Rule {
-    val title = "Prefer standard media type names"
-    val violationType = ViolationType.SHOULD
+    override val title = "Prefer standard media type names"
+    override val violationType = ViolationType.SHOULD
     override val id = "172"
-    private val DESCRIPTION = "Custom media types should only be used for versioning"
+    val desc = "Custom media types should only be used for versioning"
 
     override fun validate(swagger: Swagger): Violation? {
         val paths = swagger.paths.orEmpty().entries.flatMap { (pathName, path) ->
@@ -19,7 +19,7 @@ class MediaTypesRule : Rule {
                 if (violatingMediaTypes.isNotEmpty()) listOf("$pathName $verb") else emptyList()
             }
         }
-        return if (paths.isNotEmpty()) Violation(title, DESCRIPTION, violationType, id, paths) else null
+        return if (paths.isNotEmpty()) Violation(title, desc, violationType, id, paths) else null
     }
 
     private fun isViolatingMediaType(mediaType: String) =

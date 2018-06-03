@@ -4,10 +4,10 @@ import io.swagger.models.Swagger
 import swali.*
 
 class ExtractBasePathRule : Rule {
-    val title = "Base path can be extracted"
-    val violationType = ViolationType.HINT
+    override val title = "Base path can be extracted"
+    override val violationType = ViolationType.HINT
     override val id = "H001"
-    private val DESC_PATTERN = "All paths start with prefix '%s'. This prefix could be part of base path."
+    val descPattern = "All paths start with prefix '%s'. This prefix could be part of base path."
 
     override fun validate(swagger: Swagger): Violation? {
         val paths = swagger.paths.orEmpty().keys
@@ -16,7 +16,7 @@ class ExtractBasePathRule : Rule {
         }
         val commonPrefix = paths.reduce { s1, s2 -> findCommonPrefix(s1, s2) }
         return if (commonPrefix.isNotEmpty())
-            Violation(title, DESC_PATTERN.format(commonPrefix), violationType, "", emptyList())
+            Violation(title, descPattern.format(commonPrefix), violationType, "", emptyList())
         else null
     }
 

@@ -8,8 +8,8 @@ import io.swagger.models.properties.*
 import swali.*
 
 class ExtensibleEnumRule : Rule {
-    val title = "Prefer Compatible Extensions"
-    val violationType = ViolationType.SHOULD
+    override val title = "Prefer Compatible Extensions"
+    override val violationType = ViolationType.SHOULD
     override val id = "107"
 
     override fun validate(swagger: Swagger): Violation? {

@@ -9,8 +9,9 @@ import swali.utils.getDefinedScopes
 
 class NoUndefinedScopesRule : Rule {
     override val id = "105"
-    val title = "Must define and Assign Access Rights (Scopes)"
-    val DESC = "Undefined scopes found: "
+    override val title = "Must define and Assign Access Rights (Scopes)"
+    override val violationType = ViolationType.MUST
+    val desc = "Undefined scopes found: "
 
     override fun validate(swagger: Swagger): Violation? {
         val definedScopes = swagger.getDefinedScopes()
@@ -25,7 +26,7 @@ class NoUndefinedScopesRule : Rule {
         }
         val (paths, scopes) = pathsAndScopes.unzip()
         return if (!paths.isEmpty()) {
-            Violation(title, DESC + scopes.toSet().joinToString(), ViolationType.MUST, id, paths)
+            Violation(title, desc + scopes.toSet().joinToString(), violationType, id, paths)
         } else null
     }
 }

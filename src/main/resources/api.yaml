@@ -52,6 +52,20 @@ paths:
           schema:
             $ref: 'https://zalando.github.io/problem/schema.yaml#/Problem'
 
+  '/supported-rules':
+    get:
+      description: |
+        Returns a list of rules which are supported by Swali
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: List of supported rules is successfully returned
+          schema:
+            $ref: '#/definitions/SupportedRulesResponse'
+
 definitions:
   LintingRequest:
     type: object
@@ -132,3 +146,35 @@ definitions:
       hint:
         type: integer
         format: int32
+
+  SupportedRulesResponse:
+    type: object
+    description: Supported Rules
+    required:
+      - supported_rules
+    properties:
+      supported_rules:
+        type: array
+        items:
+          $ref: '#/definitions/Rule'
+  Rule:
+    type: object
+    description: Rule
+    required:
+      - title
+      - code
+      - type
+      - url
+    properties:
+      title:
+        type: string
+        example: 'Do Not Use URI Versioning'
+      code:
+        type: string
+        example: '115'
+      type:
+        type: string
+        example: 'MUST'
+      url:
+        type: string
+        example: 'https://zalando.github.io/restful-api-guidelines/compatibility/Compatibility.html#must-do-not-use-uri-versioning'

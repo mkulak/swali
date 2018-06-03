@@ -4,10 +4,10 @@ import io.swagger.models.Swagger
 import swali.*
 
 class NotSpecifyStandardErrorCodesRule(val standardErrorCodes: Set<Int>) : Rule {
-    val title = "Not Specify Standard Error Codes"
-    val violationType = ViolationType.HINT
+    override val title = "Not Specify Standard Error Codes"
+    override val violationType = ViolationType.HINT
     override val id = "151"
-    private val description = "Not Specify Standard Error Status Codes Like 400, 404, 503 " +
+    val desc = "Not Specify Standard Error Status Codes Like 400, 404, 503 " +
             "Unless They Have Another Meaning Or Special Implementation/Contract Detail"
 
     override fun validate(swagger: Swagger): Violation? {
@@ -23,7 +23,7 @@ class NotSpecifyStandardErrorCodesRule(val standardErrorCodes: Set<Int>) : Rule 
             }
         }
 
-        return if (paths.isNotEmpty()) Violation(title, description, violationType, id, paths) else null
+        return if (paths.isNotEmpty()) Violation(title, desc, violationType, id, paths) else null
     }
 
 }

@@ -6,8 +6,8 @@ import swali.utils.WordUtils.isPlural
 import swali.utils.getAllJsonObjects
 
 class PluralizeNamesForArraysRule(val pluralWhitelist: Set<String>) : Rule {
-    val title = "Array names should be pluralized"
-    val violationType = ViolationType.SHOULD
+    override val title = "Array names should be pluralized"
+    override val violationType = ViolationType.SHOULD
     override val id = "120"
 
     override fun validate(swagger: Swagger): Violation? {

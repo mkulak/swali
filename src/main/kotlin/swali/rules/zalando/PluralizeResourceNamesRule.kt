@@ -6,10 +6,10 @@ import swali.utils.PatternUtil.isPathVariable
 import swali.utils.WordUtils.isPlural
 
 class PluralizeResourceNamesRule(val pluralWhitelist: Set<String>) : Rule {
-    val title = "Pluralize Resource Names"
-    val violationType = ViolationType.MUST
+    override val title = "Pluralize Resource Names"
+    override val violationType = ViolationType.MUST
     override val id = "134"
-    private val DESC_PATTERN = "Resources %s are singular (but we are not sure)"
+    val descPattern = "Resources %s are singular (but we are not sure)"
 
     override fun validate(swagger: Swagger): Violation? {
         val res = swagger.paths.orEmpty().keys.flatMap { path ->
@@ -21,7 +21,7 @@ class PluralizeResourceNamesRule(val pluralWhitelist: Set<String>) : Rule {
         return if (res.isNotEmpty()) {
             val desc = res.map { "'${it.first}'" }.toSet().joinToString(", ")
             val paths = res.map { it.second }
-            Violation(title, String.format(DESC_PATTERN, desc), violationType, id, paths)
+            Violation(title, String.format(descPattern, desc), violationType, id, paths)
         } else null
     }
 }

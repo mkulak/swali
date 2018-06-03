@@ -7,10 +7,10 @@ import swali.utils.extractHeaders
 
 
 class HyphenatePascalCaseHeadersRule(val headersWhitelist: Set<String>) : Rule {
-    val title = "Prefer Hyphenated-Pascal-Case for HTTP headers"
-    val desc = "These headers are not Hyphenated-Pascal-Case: "
-    val violationType = ViolationType.SHOULD
+    override val title = "Prefer Hyphenated-Pascal-Case for HTTP headers"
+    override val violationType = ViolationType.SHOULD
     override val id = "132"
+    val desc = "These headers are not Hyphenated-Pascal-Case: "
 
     override fun validate(swagger: Swagger): Violation? {
         val allHeaders = swagger.extractHeaders()

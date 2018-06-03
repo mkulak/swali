@@ -27,3 +27,10 @@ enum class ViolationType {
     MAY,
     HINT
 }
+
+data class RuleDto(
+    val title: String,
+    val code: String,
+    val type: ViolationType,
+    val url: String
+)

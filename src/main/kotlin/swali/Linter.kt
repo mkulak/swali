@@ -5,9 +5,10 @@ import io.swagger.parser.Swagger20Parser
 
 interface Linter {
     fun doLint(apiDefinition: String, ignoreRules: Set<String>): LintingResponse
+    val rules: List<Rule>
 }
 
-class LinterImpl(val rules: List<Rule>) : Linter {
+class LinterImpl(override val rules: List<Rule>) : Linter {
     override fun doLint(apiDefinition: String, ignoreRules: Set<String>): LintingResponse {
         val swagger = try {
             Swagger20Parser().parse(apiDefinition)!!

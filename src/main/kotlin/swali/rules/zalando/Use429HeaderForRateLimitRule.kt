@@ -5,11 +5,11 @@ import io.swagger.models.properties.Property
 import swali.*
 
 class Use429HeaderForRateLimitRule : Rule {
-    val title = "Use 429 With Header For Rate Limits"
-    val violationType = ViolationType.MUST
+    override val title = "Use 429 With Header For Rate Limits"
+    override val violationType = ViolationType.MUST
     override val id = "153"
-    private val DESCRIPTION = "If Client Exceed Request Rate, Response Code Must Contain Header Information Providing Further Details to Client"
-    private val X_RATE_LIMIT_TRIO = listOf("X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset")
+    val desc = "If Client Exceed Request Rate, Response Code Must Contain Header Information Providing Further Details to Client"
+    val rateLimitHeaders = listOf("X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset")
 
     override fun validate(swagger: Swagger): Violation? {
         val paths = swagger.paths.orEmpty().flatMap { (path, pathObj) ->
@@ -21,9 +21,9 @@ class Use429HeaderForRateLimitRule : Rule {
                 }
             }
         }
-        return if (paths.isNotEmpty()) Violation(title, DESCRIPTION, violationType, id, paths) else null
+        return if (paths.isNotEmpty()) Violation(title, desc, violationType, id, paths) else null
     }
 
     private fun containsRateLimitHeader(headers: Map<String, Property>): Boolean =
-        headers.containsKey("Retry-After") || headers.keys.containsAll(X_RATE_LIMIT_TRIO)
+        headers.containsKey("Retry-After") || headers.keys.containsAll(rateLimitHeaders)
 }

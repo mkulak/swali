@@ -6,8 +6,8 @@ import swali.*
 import swali.utils.getAllJsonObjects
 
 class CommonFieldTypesRule(val commonFields: Map<String, Pair<String, String>>) : Rule {
-    val title = "Use common field names"
-    val violationType = ViolationType.MUST
+    override val title = "Use common field names"
+    override val violationType = ViolationType.MUST
     override val id = "174"
 
     fun checkField(name: String, property: Property): String? =

@@ -7,7 +7,8 @@ import swali.utils.*
 
 class NoUnsecuredEndpointsRule : Rule {
     override val id = "105"
-    val title = "Secure Endpoints with OAuth 2.0"
+    override val title = "Secure Endpoints with OAuth 2.0"
+    override val violationType = ViolationType.MUST
 
     override fun validate(swagger: Swagger): Violation? {
         val definedScopes = swagger.getDefinedScopes()
@@ -23,7 +24,7 @@ class NoUnsecuredEndpointsRule : Rule {
             }
         } else emptyList()
         return if (!paths.isEmpty()) {
-            Violation(title, "Unsecured endpoints found", ViolationType.MUST, id, paths)
+            Violation(title, "Unsecured endpoints found", violationType, id, paths)
         } else null
     }
 }

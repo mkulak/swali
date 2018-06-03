@@ -6,11 +6,11 @@ import io.swagger.models.parameters.QueryParameter
 import swali.*
 
 class QueryParameterCollectionFormatRule : Rule {
-    val title = "Explicitly define the Collection Format of Query Parameters"
-    val violationType = ViolationType.SHOULD
+    override val title = "Explicitly define the Collection Format of Query Parameters"
+    override val violationType = ViolationType.SHOULD
     override val id = "154"
     val formatsAllowed = listOf("csv", "multi")
-    val violationDescription = "CollectionFormat should be one of: {formatsAllowed}"
+    val desc = "CollectionFormat should be one of: (${formatsAllowed.joinToString()})"
 
     override fun validate(swagger: Swagger): Violation? {
         fun Collection<Parameter>?.extractInvalidQueryParam(path: String) =
@@ -30,11 +30,7 @@ class QueryParameterCollectionFormatRule : Rule {
             .map { "${it.first} ${it.second}" }
             .distinct()
 
-        return if (paths.isNotEmpty()) createViolation(paths) else null
-    }
-
-    fun createViolation(paths: List<String>): Violation {
-        return Violation(title, violationDescription, violationType, id, paths)
+        return if (paths.isNotEmpty()) Violation(title, desc, violationType, id, paths) else null
     }
 
 }

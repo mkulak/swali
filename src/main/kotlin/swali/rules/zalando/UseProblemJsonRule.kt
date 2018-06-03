@@ -6,12 +6,12 @@ import io.swagger.models.properties.RefProperty
 import swali.*
 
 class UseProblemJsonRule : Rule {
-    val title = "Use Problem JSON"
-    val violationType = ViolationType.MUST
+    override val title = "Use Problem JSON"
+    override val violationType = ViolationType.MUST
     override val id = "176"
-    private val description = "Operations Should Return Problem JSON When Any Problem Occurs During Processing " +
+    val desc = "Operations Should Return Problem JSON When Any Problem Occurs During Processing " +
         "Whether Caused by Client Or Server"
-    private val requiredFields = setOf("title", "status")
+    val requiredFields = setOf("title", "status")
 
     override fun validate(swagger: Swagger): Violation? {
         val paths = swagger.paths.orEmpty().flatMap { pathEntry ->
@@ -25,7 +25,7 @@ class UseProblemJsonRule : Rule {
             }
         }
 
-        return if (paths.isNotEmpty()) Violation(title, description, violationType, id, paths) else null
+        return if (paths.isNotEmpty()) Violation(title, desc, violationType, id, paths) else null
     }
 
     private fun isValidProblemJson(swagger: Swagger, response: Response, operation: Operation) =
@@ -36,7 +36,7 @@ class UseProblemJsonRule : Rule {
         val properties = when (schema) {
             is RefProperty -> getProperties(swagger, swagger.definitions?.get((response.schema as RefProperty).simpleRef))
             is ObjectProperty -> schema.properties?.keys.orEmpty()
-            else -> emptySet<String>()
+            else -> emptySet()
         }
         return properties.containsAll(requiredFields)
     }

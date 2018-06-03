@@ -6,8 +6,8 @@ import swali.*
 import swali.utils.PatternUtil
 
 class SnakeCaseForQueryParamsRule : Rule {
-    val title = "Use snake_case (never camelCase) for Query Parameters"
-    val violationType = ViolationType.MUST
+    override val title = "Use snake_case (never camelCase) for Query Parameters"
+    override val violationType = ViolationType.MUST
     override val id = "130"
 
     override fun validate(swagger: Swagger): Violation? {

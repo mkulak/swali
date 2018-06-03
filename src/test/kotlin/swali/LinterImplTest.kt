@@ -2,8 +2,8 @@ package swali
 
 import io.swagger.models.Swagger
 import org.junit.Assert.assertEquals
-import org.junit.Assert.fail
 import org.junit.Test
+import kotlin.test.fail
 
 class LinterImplTest {
     @Test
@@ -13,6 +13,8 @@ class LinterImplTest {
         val violation2 = Violation("rule2", "desc2", ViolationType.SHOULD, "link2", listOf())
         val rule1 = object : Rule {
             override val id = "id1"
+            override val title = "title1"
+            override val violationType = ViolationType.MUST
 
             override fun validate(swagger: Swagger): Violation? {
                 assertEquals("API Repository API", swagger.info.title)
@@ -21,11 +23,15 @@ class LinterImplTest {
         }
         val ruleIgnore = object : Rule {
             override val id = "id_ignore"
+            override val title = "title_ignore"
+            override val violationType = ViolationType.MUST
 
             override fun validate(swagger: Swagger): Violation? = throw RuntimeException("This rule should be ignored")
         }
         val rule2 = object : Rule {
             override val id = "id2"
+            override val title = "title2"
+            override val violationType = ViolationType.SHOULD
 
             override fun validate(swagger: Swagger): Violation? = violation2
         }
@@ -39,11 +45,10 @@ class LinterImplTest {
     fun `negative case`() {
         val rule1 = object : Rule {
             override val id = "id1"
+            override val title = "title1"
+            override val violationType = ViolationType.MUST
 
-            override fun validate(swagger: Swagger): Violation? {
-                fail()
-                return null
-            }
+            override fun validate(swagger: Swagger): Violation? = fail()
         }
         val unit = LinterImpl(listOf(rule1))
         val response = unit.doLint("invalid swagger content", setOf("id_ignore"))

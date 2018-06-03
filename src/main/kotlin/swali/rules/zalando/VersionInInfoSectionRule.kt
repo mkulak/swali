@@ -6,8 +6,9 @@ import swali.utils.PatternUtil.isVersion
 
 
 class VersionInInfoSectionRule : Rule {
-    val title = "Use semantic versioning"
+    override val title = "Use semantic versioning"
     override val id = "116"
+    override val violationType = ViolationType.SHOULD
 
     override fun validate(swagger: Swagger): Violation? {
         val version = swagger.info?.version
@@ -16,6 +17,6 @@ class VersionInInfoSectionRule : Rule {
             !isVersion(version) -> "#/info/version has incorrect format. Should be <MAJOR>.<MINOR>.<PATCH>"
             else -> null
         }
-        return if (desc != null) Violation(title, desc, ViolationType.SHOULD, id, emptyList()) else null
+        return if (desc != null) Violation(title, desc, violationType, id, emptyList()) else null
     }
 }

@@ -7,10 +7,10 @@ import swali.*
 import swali.utils.getAllJsonObjects
 
 class FormatForNumbersRule(val numberFormats: Map<String, List<String>>) : Rule {
-    val title = "Define Format for Type Number and Integer"
-    val violationType = ViolationType.MUST
+    override val title = "Define Format for Type Number and Integer"
+    override val violationType = ViolationType.MUST
     override val id = "171"
-    private val description = """Numeric properties must have valid format specified: """
+    val desc = "Numeric properties must have valid format specified: "
 
 
     override fun validate(swagger: Swagger): Violation? {
@@ -31,7 +31,7 @@ class FormatForNumbersRule(val numberFormats: Map<String, List<String>>) : Rule 
         return if (result.isNotEmpty()) {
             val (props, paths) = result.unzip()
             val properties = props.flatten().toSet().joinToString(", ")
-            Violation(title, description + properties, violationType, id, paths)
+            Violation(title, desc + properties, violationType, id, paths)
         } else null
     }
 

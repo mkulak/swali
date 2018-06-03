@@ -8,8 +8,8 @@ import swali.*
 
 
 class NoUnusedDefinitionsRule : Rule {
-    val title = "Do not leave unused definitions"
-    val violationType = ViolationType.SHOULD
+    override val title = "Do not leave unused definitions"
+    override val violationType = ViolationType.SHOULD
     override val id = "S005"
 
     override fun validate(swagger: Swagger): Violation? {

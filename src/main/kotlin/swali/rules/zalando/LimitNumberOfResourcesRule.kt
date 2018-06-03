@@ -4,8 +4,8 @@ import io.swagger.models.Swagger
 import swali.*
 
 class LimitNumberOfResourcesRule(val pathsCountLimit: Int) : Rule {
-    val title = "Limit number of Resources"
-    val violationType = ViolationType.SHOULD
+    override val title = "Limit number of Resources"
+    override val violationType = ViolationType.SHOULD
     override val id = "146"
 
     override fun validate(swagger: Swagger): Violation? {

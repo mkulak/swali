@@ -7,10 +7,10 @@ import swali.utils.getAllJsonObjects
 
 
 class SnakeCaseInPropNameRule(val whitelist: Set<String>) : Rule {
-    val title = "snake_case property names"
-    val violationType = ViolationType.MUST
+    override val title = "snake_case property names"
+    override val violationType = ViolationType.MUST
     override val id = "118"
-    private val description = "Property names must be snake_case: "
+    val desc = "Property names must be snake_case: "
 
     override fun validate(swagger: Swagger): Violation? {
         val result = swagger.getAllJsonObjects().flatMap { (def, path) ->
@@ -20,7 +20,7 @@ class SnakeCaseInPropNameRule(val whitelist: Set<String>) : Rule {
         return if (result.isNotEmpty()) {
             val (props, paths) = result.unzip()
             val properties = props.flatten().toSet().joinToString(", ")
-            Violation(title, description + properties, violationType, id, paths)
+            Violation(title, desc + properties, violationType, id, paths)
         } else null
     }
 }

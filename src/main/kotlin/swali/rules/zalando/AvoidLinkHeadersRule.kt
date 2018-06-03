@@ -6,10 +6,10 @@ import swali.utils.extractHeaders
 
 
 class AvoidLinkHeadersRule(val headersWhitelist: Set<String>) : Rule {
-    val title = "Avoid Link in Header Rule"
-    val desc = "Do Not Use Link Headers with JSON entities"
-    val violationType = ViolationType.MUST
+    override val title = "Avoid Link in Header Rule"
+    override val violationType = ViolationType.MUST
     override val id = "166"
+    val desc = "Do Not Use Link Headers with JSON entities"
 
     override fun validate(swagger: Swagger): Violation? {
         val allHeaders = swagger.extractHeaders()

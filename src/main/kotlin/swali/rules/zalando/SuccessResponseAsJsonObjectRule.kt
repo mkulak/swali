@@ -6,10 +6,10 @@ import io.swagger.models.properties.RefProperty
 import swali.*
 
 class SuccessResponseAsJsonObjectRule : Rule {
-    val title = "Response As JSON Object"
-    val violationType = ViolationType.MUST
+    override val title = "Response As JSON Object"
+    override val violationType = ViolationType.MUST
     override val id = "110"
-    private val DESCRIPTION = "Always Return JSON Objects As Top-Level Data Structures To Support Extensibility"
+    val desc = "Always Return JSON Objects As Top-Level Data Structures To Support Extensibility"
 
     override fun validate(swagger: Swagger): Violation? {
         val paths = ArrayList<String>()
@@ -27,7 +27,7 @@ class SuccessResponseAsJsonObjectRule : Rule {
             }
         }
 
-        return if (paths.isNotEmpty()) Violation(title, DESCRIPTION, violationType, id, paths) else null
+        return if (paths.isNotEmpty()) Violation(title, desc, violationType, id, paths) else null
     }
 
     private fun Property?.isRefToObject(swagger: Swagger) =

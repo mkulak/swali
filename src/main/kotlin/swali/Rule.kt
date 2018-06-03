@@ -6,6 +6,9 @@ import swali.rules.zally.*
 
 interface Rule {
     val id: String
+    val title: String
+    val violationType: ViolationType
+
     fun validate(swagger: Swagger): Violation?
 }
 

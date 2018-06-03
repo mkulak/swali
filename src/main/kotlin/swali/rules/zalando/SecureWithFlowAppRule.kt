@@ -7,8 +7,9 @@ import swali.*
 
 class SecureWithFlowAppRule : Rule {
     override val id = "104"
-    val title = "Secure Endpoints with OAuth 2.0"
-    val description = "OAuth2 security definitions must use application flow"
+    override val title = "Secure Endpoints with OAuth 2.0"
+    override val violationType = ViolationType.MUST
+    val desc = "OAuth2 security definitions must use application flow"
 
     override fun validate(swagger: Swagger): Violation? {
         val hasWrongFlow = swagger
@@ -19,7 +20,7 @@ class SecureWithFlowAppRule : Rule {
             .any { (it as OAuth2Definition).flow != "application" }
 
         return if (hasWrongFlow)
-            Violation(title, description, ViolationType.MUST, ruleLink(id), emptyList())
+            Violation(title, desc, violationType, ruleLink(id), emptyList())
         else null
     }
 }
