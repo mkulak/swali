@@ -36,7 +36,8 @@ class HttpApi(val linter: Linter) {
                 statusCode = 200
                 headers = mapOf(
                     "Content-Type" to "application/json",
-                    "Access-Control-Allow-Origin" to "*"
+                    "Access-Control-Allow-Origin" to "*",
+                    "Cache-Control" to "no-cache"
                 )
                 body = mapper.writeValueAsString(response)
             }
