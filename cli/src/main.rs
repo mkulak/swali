@@ -15,7 +15,7 @@ use hyper::Client;
 use hyper::rt::{self, Future, Stream};
 
 fn main() {
-    println!("Hello, world!");
+//    println!("Hello, world!");
     rt::run(rt::lazy(move || {
         let client = Client::new();
 
@@ -24,18 +24,23 @@ fn main() {
         client
             .get(uri)
             .and_then(|res| {
-                println!("Response: {}", res.status());
-                println!("Headers: {:#?}", res.headers());
+//                println!("Response: {}", res.status());
+//                println!("Headers: {:#?}", res.headers());
 
                 // The body is a stream, and for_each returns a new Future
                 // when the stream is finished, and calls the closure on
                 // each chunk of the body...
-                res.into_body().for_each(|chunk| {
-                    io::stdout().write_all(&chunk)
-                        .map_err(|e| panic!("example expects stdout is open, error={}", e))
+//                res.into_body().for_each(|chunk| {
+//                    io::stdout().write_all(&chunk)
+//                        .map_err(|e| panic!("example expects stdout is open, error={}", e))
+//                })
+                res.into_body().map(|chunk| {
+                    chunk.iter()
+                        .map(|byte| *byte)
+                        .collect::<Vec<u8>>()
                 })
             })
-            .map(|_| {
+            .map(|res| {
                 println!("\n\nDone.");
             })
             .map_err(|err| {
