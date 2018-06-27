@@ -1,21 +1,20 @@
 #![allow(unused_imports)]
 
-extern crate futures;
-extern crate tokio_core;
-extern crate hyper;
-extern crate hyper_tls;
 extern crate ansi_term;
 extern crate clap;
+extern crate futures;
+extern crate hyper;
+extern crate hyper_tls;
 extern crate serde;
-
-use std::env;
-use std::io::{self, Write};
+extern crate tokio_core;
 
 use hyper::Client;
 use hyper::rt::{self, Future, Stream};
+use std::env;
+use std::fmt::{Display, Formatter, Result};
+use std::io::{self, Write};
 
 fn main() {
-//    println!("Hello, world!");
     rt::run(rt::lazy(move || {
         let client = Client::new();
 
@@ -23,31 +22,35 @@ fn main() {
 
         client
             .get(uri)
+            .map_err(|err| to_failure(err))
             .and_then(|res| {
-//                println!("Response: {}", res.status());
-//                println!("Headers: {:#?}", res.headers());
-
-                // The body is a stream, and for_each returns a new Future
-                // when the stream is finished, and calls the closure on
-                // each chunk of the body...
-//                res.into_body().for_each(|chunk| {
-//                    io::stdout().write_all(&chunk)
-//                        .map_err(|e| panic!("example expects stdout is open, error={}", e))
-//                })
-                res.into_body().map(|chunk| {
-                    chunk.iter()
-                        .map(|byte| *byte)
-                        .collect::<Vec<u8>>()
-                })
+                res
+                    .into_body()
+                    .concat2()
+                    .map_err(|err| to_failure(err))
+                    .and_then(|body| {
+                        String::from_utf8(body.into_iter().collect()).map_err(|err| to_failure(err))
+                    })
             })
             .map(|res| {
-                println!("\n\nDone.");
+                println!("\n\nDone. {}", res);
             })
             .map_err(|err| {
                 eprintln!("Error {}", err);
             })
-
     }));
+}
+
+fn to_failure<A: Display>(a: A) -> Failure {
+    Failure { show: format!("Failure: {}", a) }
+}
+
+struct Failure { show: String }
+
+impl Display for Failure {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        write!(f, "{}", self.show)
+    }
 }
 
 
