@@ -6,19 +6,27 @@ extern crate futures;
 extern crate hyper;
 extern crate hyper_tls;
 extern crate serde;
+extern crate serde_json;
 extern crate tokio_core;
+
+#[macro_use]
+extern crate serde_derive;
 
 use hyper::Client;
 use hyper::rt::{self, Future, Stream};
+use hyper_tls::HttpsConnector;
 use std::env;
 use std::fmt::{Display, Formatter, Result};
 use std::io::{self, Write};
+use std::result;
+use serde_json::Error;
 
 fn main() {
     rt::run(rt::lazy(move || {
-        let client = Client::new();
+        let https = HttpsConnector::new(1).unwrap();
+        let client = Client::builder().build::<_, hyper::Body>(https);
 
-        let uri: hyper::Uri = "http://httpbin.org/ip".parse().unwrap();
+        let uri: hyper::Uri = "https://httpbin.org/ip".parse().unwrap();
 
         client
             .get(uri)
@@ -28,17 +36,20 @@ fn main() {
                     .into_body()
                     .concat2()
                     .map_err(|err| to_failure(err))
-                    .and_then(|body| {
-                        String::from_utf8(body.into_iter().collect()).map_err(|err| to_failure(err))
-                    })
+                    .and_then(|body| parse_body(body))
             })
             .map(|res| {
-                println!("\n\nDone. {}", res);
+                println!("\n\nDone. {}", res.origin);
             })
             .map_err(|err| {
                 eprintln!("Error {}", err);
             })
     }));
+}
+
+fn parse_body(body: hyper::Chunk) -> result::Result<IpResponse, Failure> {
+    let s = String::from_utf8(body.into_iter().collect()).map_err(|err| to_failure(err))?;
+    serde_json::from_str::<IpResponse>(&s).map_err(|err| to_failure(err))
 }
 
 fn to_failure<A: Display>(a: A) -> Failure {
@@ -52,6 +63,12 @@ impl Display for Failure {
         write!(f, "{}", self.show)
     }
 }
+
+#[derive(Serialize, Deserialize)]
+struct IpResponse {
+    origin: String
+}
+
 
 
 //M008 MUST: Host should not contain protocol
