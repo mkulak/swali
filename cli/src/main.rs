@@ -26,7 +26,7 @@ fn main() {
         let https = HttpsConnector::new(1).unwrap();
         let client = Client::builder().build::<_, hyper::Body>(https);
 
-        let uri: hyper::Uri = "https://httpbin.org/ip".parse().unwrap();
+        let uri: hyper::Uri = "https://ijgf82g4o9.execute-api.us-west-2.amazonaws.com/api/supported-rules".parse().unwrap();
 
         client
             .get(uri)
@@ -39,7 +39,9 @@ fn main() {
                     .and_then(|body| parse_body(body))
             })
             .map(|res| {
-                println!("\n\nDone. {}", res.origin);
+                res.supported_rules.iter().for_each(|rule|
+                    println!("{}\n", rule)
+                )
             })
             .map_err(|err| {
                 eprintln!("Error {}", err);
@@ -47,9 +49,9 @@ fn main() {
     }));
 }
 
-fn parse_body(body: hyper::Chunk) -> result::Result<IpResponse, Failure> {
+fn parse_body(body: hyper::Chunk) -> result::Result<SupportedRulesResponse, Failure> {
     let s = String::from_utf8(body.into_iter().collect()).map_err(|err| to_failure(err))?;
-    serde_json::from_str::<IpResponse>(&s).map_err(|err| to_failure(err))
+    serde_json::from_str(&s).map_err(|err| to_failure(err))
 }
 
 fn to_failure<A: Display>(a: A) -> Failure {
@@ -65,12 +67,22 @@ impl Display for Failure {
 }
 
 #[derive(Serialize, Deserialize)]
-struct IpResponse {
-    origin: String
+struct SupportedRulesResponse {
+    supported_rules: Vec<SupportedRule>
+}
+
+#[derive(Serialize, Deserialize)]
+struct SupportedRule {
+    title: String,
+    code: String,
+    #[serde(rename="type")]
+    a_type: String,
+    url: String
 }
 
 
-
-//M008 MUST: Host should not contain protocol
-//    https://zalando.github.io/restful-api-guidelines/#M008
-//
+impl Display for SupportedRule {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        write!(f, "{} {} {}\n\t{}", self.code, self.a_type, self.title, self.url)
+    }
+}
