@@ -20,6 +20,8 @@ use std::fmt::{Display, Formatter, Result};
 use std::io::{self, Write};
 use std::result;
 use serde_json::Error;
+use ansi_term::Colour;
+use ansi_term::Style;
 
 fn main() {
     rt::run(rt::lazy(move || {
@@ -30,28 +32,21 @@ fn main() {
 
         client
             .get(uri)
-            .map_err(|err| to_failure(err))
-            .and_then(|res| {
-                res
-                    .into_body()
-                    .concat2()
-                    .map_err(|err| to_failure(err))
-                    .and_then(|body| parse_body(body))
-            })
+            .and_then(|res| res.into_body().concat2())
+            .map_err(to_failure)
+            .and_then(parse_body)
             .map(|res| {
                 res.supported_rules.iter().for_each(|rule|
                     println!("{}\n", rule)
                 )
             })
-            .map_err(|err| {
-                eprintln!("Error {}", err);
-            })
+            .map_err(|err| eprintln!("Error {}", err))
     }));
 }
 
 fn parse_body(body: hyper::Chunk) -> result::Result<SupportedRulesResponse, Failure> {
-    let s = String::from_utf8(body.into_iter().collect()).map_err(|err| to_failure(err))?;
-    serde_json::from_str(&s).map_err(|err| to_failure(err))
+    let s = String::from_utf8(body.into_iter().collect()).map_err(to_failure)?;
+    serde_json::from_str(&s).map_err(to_failure)
 }
 
 fn to_failure<A: Display>(a: A) -> Failure {
@@ -83,6 +78,18 @@ struct SupportedRule {
 
 impl Display for SupportedRule {
     fn fmt(&self, f: &mut Formatter) -> Result {
-        write!(f, "{} {} {}\n\t{}", self.code, self.a_type, self.title, self.url)
+        let styled_title = Style::new().bold().paint(self.title.as_str());
+        let type_ptr = self.a_type.as_str();
+        let styled_type = Style::new().bold().fg(get_color(type_ptr)).paint(type_ptr);
+        write!(f, "{} {} {}\n\t{}", self.code, styled_type, styled_title, self.url)
     }
 }
+
+fn get_color(a_type: &str) -> Colour {
+    match a_type {
+        "MUST" => Colour::Red,
+        "SHOULD" => Colour::Yellow,
+        _ => Colour::Green
+    }
+}
+
