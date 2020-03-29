@@ -20,3 +20,20 @@ dependencies {
 }
 
 kotlin.target.nodejs { }
+
+task copyCode(type: Copy) {
+    from "$buildDir/js/packages/swali-cf/kotlin"
+    include "*.js"
+    into "dist/kotlin"
+}
+
+task copyMeta(type: Copy) {
+    from "$buildDir/js/packages/swali-cf/package.json", "wrangler.toml"
+    into "dist"
+}
+
+task deploy(type: Exec) {
+    dependsOn "copyCode", "copyMeta"
+    commandLine "wrangler", "publish"
+    workingDir "dist"
+}

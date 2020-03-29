@@ -9,7 +9,7 @@ fun main() {
 }
 
 fun handleRequest(request: dynamic): dynamic {
-    val response = Response("ABC", mapOf("headers" to mapOf("Content-Type" to "text/html")))
+    val response = Response("Hello from Kotlin", mapOf("headers" to mapOf("Content-Type" to "text/html")))
     return response
 }
 
