@@ -1,9 +1,7 @@
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.asDeferred
-import kotlinx.coroutines.asPromise
-import kotlinx.coroutines.async
 import kotlinx.coroutines.await
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.w3c.fetch.Request
 import org.w3c.fetch.Response
@@ -12,20 +10,20 @@ import kotlin.js.Promise
 
 fun main() {
     addEventListener("fetch") { event: FetchEvent ->
-        Promise<Unit> { resolve, reject ->
-            GlobalScope.async(Dispatchers.Unconfined) {
-                event.respondWith(handleRequest(event.request))
-                resolve(Unit)
+        val promise = Promise<Response> { resolve, _ ->
+            GlobalScope.launch(Dispatchers.Unconfined) {
+                resolve(handleRequest(event.request))
             }
         }
+        event.respondWith(promise)
     }
 }
 
-fun handleRequest(request: Request): Response {
+suspend fun handleRequest(request: Request): Response {
     val foo = request.headers.get("Foo")
-//    val body = request.text().await()
+    delay(20)
+    val body = request.text().await()
     val url = request.url
-    val response = Response("Deferred Main $url $foo body", ResponseInit(headers = mapOf("Content-Type" to "text/html")))
-    return response
+    return Response("Response: $url $foo $body", ResponseInit(headers = mapOf("Content-Type" to "text/html")))
 }
 
