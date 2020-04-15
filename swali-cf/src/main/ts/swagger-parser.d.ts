@@ -1,4 +1,4 @@
-import { OpenAPI } from "ts/openapi-types";
+import { OpenAPI } from "openapi-types";
 
 export = SwaggerParser
 

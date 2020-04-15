@@ -1,3 +1,4 @@
+@file:JsModule("@apidevtools/swagger-parser")
 @file:Suppress("INTERFACE_WITH_SUPERCLASS", "OVERRIDING_FINAL_MEMBER", "RETURN_TYPE_MISMATCH_ON_OVERRIDE", "CONFLICTING_OVERLOADS", "EXTERNAL_DELEGATION")
 package swagger_parser
 
@@ -25,10 +26,6 @@ import swagger_parser.SwaggerParser.`T$4`
 import swagger_parser.SwaggerParser.ResolverOptions
 import swagger_parser.SwaggerParser.FileInfo
 import openapi_types.OpenAPIV3.Document
-
-typealias ApiCallback = (err: Error?, api: Document) -> Any
-
-typealias RefsCallback = (err: Error?, `$refs`: `$Refs`) -> Any
 
 external open class SwaggerParser {
     open var api: Document

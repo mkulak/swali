@@ -14,13 +14,18 @@ repositories {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-js"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.3.5"
-    implementation(npm("swagger-parser", "9.0.1"))
+    implementation(npm("@apidevtools/swagger-parser", "9.0.1"))
+    implementation(npm("openapi-types", "1.3.5"))
     implementation(npm("wrangler-js", "0.1.11"))
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testImplementation "org.jetbrains.kotlin:kotlin-test-js"
 }
 
-kotlin.target.nodejs { }
+kotlin.target {
+    useCommonJs()
+    nodejs { }
+//    browser { testTask { } }
+}
 
 task copyCode(type: Copy) {
     from "$buildDir/js/packages/swali-cf/kotlin"

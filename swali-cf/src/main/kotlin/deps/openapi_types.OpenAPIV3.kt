@@ -1,4 +1,4 @@
-@file:JsQualifier("openapi_types.OpenAPIV3")
+@file:JsModule("openapi-types")
 @file:Suppress("INTERFACE_WITH_SUPERCLASS", "OVERRIDING_FINAL_MEMBER", "RETURN_TYPE_MISMATCH_ON_OVERRIDE", "CONFLICTING_OVERLOADS", "EXTERNAL_DELEGATION")
 package openapi_types.OpenAPIV3
 

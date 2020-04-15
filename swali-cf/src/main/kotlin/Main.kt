@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import org.w3c.fetch.Request
 import org.w3c.fetch.Response
 import org.w3c.fetch.ResponseInit
+import swagger_parser.SwaggerParser
 import kotlin.js.Promise
 
 fun main() {
@@ -23,7 +24,14 @@ suspend fun handleRequest(request: Request): Response {
     val foo = request.headers.get("Foo")
     delay(20)
     val body = request.text().await()
+    val response = try {
+        val document = SwaggerParser.validate(body).await()
+        "${document.info.title} ${document.info.version}"
+    } catch (e: Exception) {
+        e.toString()
+    }
     val url = request.url
-    return Response("Response: $url $foo $body", ResponseInit(headers = mapOf("Content-Type" to "text/html")))
+//    return Response("Response: $url $foo $body", ResponseInit(headers = mapOf("Content-Type" to "text/html")))
+    return Response(response)
 }
 
