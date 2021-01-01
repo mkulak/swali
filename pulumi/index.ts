@@ -76,7 +76,10 @@ const proxy = new gcp.compute.TargetHttpsProxy("site-lb-target-proxy", {
     name: "site-lb-target-proxy",
     urlMap: urlMap.id,
     sslCertificates: [sslCertificate.id],
+    // sslCertificates: ["https://www.googleapis.com/compute/v1/projects/swali-300214/global/sslCertificates/swali-certificate"],
+    // urlMap: "https://www.googleapis.com/compute/v1/projects/swali-300214/global/urlMaps/site-lb",
 });
+
 
 const forwardingRule = new gcp.compute.ForwardingRule("site-fe", {
     // region: region,
@@ -92,3 +95,5 @@ const forwardingRule = new gcp.compute.ForwardingRule("site-fe", {
 
 export const bucketName = staticSiteBucket.url;
 export const ip = ipAddress.address;
+export const urlMapId = urlMap.id;
+export const sslCertId = sslCertificate.id;
