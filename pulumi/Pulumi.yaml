@@ -1,0 +1,3 @@
+name: swali-gcp
+runtime: nodejs
+description: Swali infra for GCP

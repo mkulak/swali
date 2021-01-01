@@ -17,9 +17,11 @@ Address of deployed version: https://ijgf82g4o9.execute-api.us-west-2.amazonaws.
 Send request via command line:
  
 ```bash
-echo '{"api_definition_url": "http://petstore.swagger.io/v2/swagger.json", 
-"ignore_rules": ["172", "146", "150", "110", "176", "151", "143", "174", "129"]}' | 
-http POST https://ijgf82g4o9.execute-api.us-west-2.amazonaws.com/api/violations
+curl -X POST --location "https://ijgf82g4o9.execute-api.us-west-2.amazonaws.com/api/violations" \
+    -d "{
+  \"api_definition_url\": \"https://petstore.swagger.io/v2/swagger.json\",
+  \"ignore_rules\": [\"172\", \"146\", \"150\", \"110\", \"176\", \"151\", \"143\", \"174\", \"129\"]
+}"
 ``` 
 
 CLI and Web UI is in development.

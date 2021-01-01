@@ -1,0 +1,3 @@
+config:
+  gcp:project: swali-300214
+  gcp:region: europe-west3
