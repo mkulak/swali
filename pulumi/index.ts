@@ -51,28 +51,30 @@ const siteBackend = new gcp.compute.BackendBucket("site-backend-bucket", {
 
 // const targetPool = new gcp.compute.TargetPool("client-pool", {});
 
-// const instanceTemplate = new gcp.compute.InstanceTemplate("client", {
-//     disks: [{
-//         autoDelete: true,
-//         boot: true,
-//         sourceImage: "debian-9",
-//     }],
-//     // labels: options.labels,
-//     machineType: "e2-small",
-//     scheduling: {
-//         preemptible: true
-//     },
-//
-//     // metadataStartupScript: fs.readFileSync(`${__dirname}/files/startup.sh`, "utf-8"),
-//     networkInterfaces: [{
-//         network: "default",
-//     }],
-//     // serviceAccount: {
-//     //     email: `${options.serviceAccountName}@assetstore.iam.gserviceaccount.com`,
-//     //     scopes: ["compute-ro"],
-//     // },
-//     // tags: options.tags,
-// });
+const instanceTemplate = new gcp.compute.InstanceTemplate("template-1", {
+    disks: [{
+        autoDelete: true,
+        boot: true,
+        sourceImage: "debian-9",
+    }],
+    // labels: options.labels,
+    machineType: "e2-small",
+    scheduling: {
+        preemptible: true,
+        automaticRestart: false,
+    },
+
+    // metadataStartupScript: fs.readFileSync(`${__dirname}/files/startup.sh`, "utf-8"),
+    networkInterfaces: [{
+        network: "default",
+    }],
+    // serviceAccount: {
+    //     email: `${options.serviceAccountName}@assetstore.iam.gserviceaccount.com`,
+    //     scopes: ["compute-ro"],
+    // },
+    // tags: options.tags,
+});
+
 // const instanceGroupManager = new gcp.compute.InstanceGroupManager("instance-group-manager", {
 //     baseInstanceName: "be-instance",
 //     versions: [{
