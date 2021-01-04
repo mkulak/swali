@@ -49,32 +49,62 @@ const siteBackend = new gcp.compute.BackendBucket("site-backend-bucket", {
 });
 
 
-// const targetPool = new gcp.compute.TargetPool("client-pool", {});
+const network = new gcp.compute.Network("network")
+
+const firewall = new gcp.compute.Firewall("firewall", {
+    network: network.id,
+    allows: [
+        {protocol: "tcp", ports: ["22"],},
+        {protocol: "tcp", ports: ["80"],},
+        {protocol: "tcp", ports: ["8080"],},
+    ]
+})
+
+const container_instance_metadata_script = `
+spec:
+    containers:
+        - name: c1
+          image: 'gcr.io/cloud-marketplace/google/nginx1:latest'
+          stdin: false
+          tty: false
+    restartPolicy: Always
+`
 
 const instanceTemplate = new gcp.compute.InstanceTemplate("template-1", {
+    name: "template-1",
     disks: [{
         autoDelete: true,
         boot: true,
-        sourceImage: "debian-9",
+        sourceImage: "cos-cloud/cos-85-lts",
     }],
-    // labels: options.labels,
     machineType: "e2-small",
     scheduling: {
         preemptible: true,
         automaticRestart: false,
     },
-
-    // metadataStartupScript: fs.readFileSync(`${__dirname}/files/startup.sh`, "utf-8"),
     networkInterfaces: [{
-        network: "default",
+        network: network.id,
     }],
-    // serviceAccount: {
-    //     email: `${options.serviceAccountName}@assetstore.iam.gserviceaccount.com`,
-    //     scopes: ["compute-ro"],
-    // },
+    metadata: {
+        "gce-container-declaration": container_instance_metadata_script,
+    },
+    serviceAccount: {
+        email: "default",
+        scopes: [
+            "https://www.googleapis.com/auth/devstorage.read_only",
+            "https://www.googleapis.com/auth/logging.write",
+            "https://www.googleapis.com/auth/monitoring.write",
+            "https://www.googleapis.com/auth/service.management.readonly",
+            "https://www.googleapis.com/auth/servicecontrol",
+            "https://www.googleapis.com/auth/trace.append",
+        ],
+    },
+    // metadataStartupScript: fs.readFileSync(`${__dirname}/files/startup.sh`, "utf-8"),
+    // labels: options.labels,
     // tags: options.tags,
 });
 
+// const targetPool = new gcp.compute.TargetPool("client-pool", {});
 // const instanceGroupManager = new gcp.compute.InstanceGroupManager("instance-group-manager", {
 //     baseInstanceName: "be-instance",
 //     versions: [{
