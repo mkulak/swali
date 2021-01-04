@@ -104,39 +104,50 @@ const instanceTemplate = new gcp.compute.InstanceTemplate("template-1", {
     // tags: options.tags,
 });
 
-// const targetPool = new gcp.compute.TargetPool("client-pool", {});
-// const instanceGroupManager = new gcp.compute.InstanceGroupManager("instance-group-manager", {
-//     baseInstanceName: "be-instance",
-//     versions: [{
-//         instanceTemplate: instanceTemplate.id,
-//         name: "live"
-//     }],
-//     waitForInstances: true,
-//     namedPorts: [{
-//         name: "app",
-//         port: 8080,
-//     }],
-//     targetPools: [targetPool.id],
-//     // statefulDisks: {},
-//     targetSize: 3,
-// });
+const targetPool = new gcp.compute.TargetPool("client-pool", {});
+const instanceGroupManager = new gcp.compute.InstanceGroupManager("instance-group-manager", {
+    baseInstanceName: "be-instance",
+    versions: [{
+        instanceTemplate: instanceTemplate.id,
+        name: "live"
+    }],
+    waitForInstances: true,
+    namedPorts: [
+        {
+            name: "app",
+            port: 8080,
+        },
+        {
+            name: "nginx",
+            port: 80,
+        }
+    ],
+    targetPools: [targetPool.id],
+    // statefulDisks: {},
+    targetSize: 0,
+    zone: "europe-west3-a"
+});
 
-// const healthCheck = new gcp.compute.HttpHealthCheck("health-check", {
-//     port: 8080,
-//     requestPath: "/health",
-//     checkIntervalSec: 1,
-//     timeoutSec: 1,
-// });
+const healthCheck = new gcp.compute.HealthCheck("health-check", {
+    httpHealthCheck: {
+        port: 8080,
+        // requestPath: "/health",
+        requestPath: "/",
+    },
+    checkIntervalSec: 1,
+    timeoutSec: 1,
+});
 
-// const groupBackend = new gcp.compute.BackendService("group-backend", {
-//     portName: "app",
-//     protocol: "HTTP2",
-//     timeoutSec: 5,
-//     healthChecks: healthCheck.id,
-//     backends: [{
-//         group: instanceGroupManager.instanceGroup,
-//     }],
-// });
+const groupBackend = new gcp.compute.BackendService("group-backend", {
+    // portName: "app",
+    portName: "nginx",
+    protocol: "HTTP",
+    timeoutSec: 5,
+    healthChecks: healthCheck.id,
+    backends: [{
+        group: instanceGroupManager.instanceGroup,
+    }],
+});
 
 const urlMap = new gcp.compute.URLMap("site-lb", {
     description: "",
@@ -163,11 +174,11 @@ const urlMap = new gcp.compute.URLMap("site-lb", {
         },
         {
             name: "app",
-            // defaultService: groupBackend.id
-            defaultUrlRedirect: {
-                hostRedirect: "google.com",
-                stripQuery: true
-            },
+            defaultService: groupBackend.id
+            // defaultUrlRedirect: {
+            //     hostRedirect: "google.com",
+            //     stripQuery: true
+            // },
         },
     ],
 });

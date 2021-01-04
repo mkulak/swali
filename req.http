@@ -3,7 +3,7 @@ GET http://swali.kvarto.net
 
 ###
 # @no-redirect
-GET http://app.kvarto.net
+GET https://app.kvarto.net
 
 ###
 GET https://swali.kvarto.net
