@@ -4,6 +4,7 @@ import * as fs from "fs";
 import {network} from "../network/nat";
 
 let gcpConfig = new Config("gcp");
+let config = new Config();
 
 const container_declaration = fs.readFileSync(`${__dirname}/metadata-docker.yaml`, "utf-8")
 
@@ -63,20 +64,20 @@ const instanceGroupManager = new gcp.compute.InstanceGroupManager("instance-grou
             name: "app",
             port: 8080,
         },
-        {
-            name: "nginx",
-            port: 80,
-        }
+        // {
+        //     name: "nginx",
+        //     port: 80,
+        // }
     ],
     targetPools: [targetPool.id],
     // statefulDisks: {},
-    targetSize: 1,
+    targetSize: config.requireNumber("instance-count"),
     zone: gcpConfig.require("instance-group-zone")
 });
 
 const healthCheck = new gcp.compute.HealthCheck("health-check", {
     httpHealthCheck: {
-        port: 80,
+        port: 8080,
         // requestPath: "/health",
         requestPath: "/",
     },
@@ -85,8 +86,7 @@ const healthCheck = new gcp.compute.HealthCheck("health-check", {
 });
 
 export const groupBackend = new gcp.compute.BackendService("group-backend", {
-    // portName: "app",
-    portName: "nginx",
+    portName: "app",
     protocol: "HTTP",
     timeoutSec: 5,
     healthChecks: healthCheck.id,

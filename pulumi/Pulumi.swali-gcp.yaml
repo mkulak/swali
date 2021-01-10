@@ -4,3 +4,4 @@ config:
   gcp:instance-group-zone: europe-west3-a
   swali-gcp:swali-host: "swali.kvarto.net"
   swali-gcp:app-host: "app.kvarto.net"
+  swali-gcp:instance-count: 3
