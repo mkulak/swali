@@ -3,19 +3,14 @@ import * as gcp from "@pulumi/gcp";
 
 
 const region = "europe-west3"
+const igZone = "europe-west3-a"
 let host = "swali.kvarto.net";
 
 const staticSiteBucket = new gcp.storage.Bucket("fe-static", {
     name: "fe-static",
     cors: [{
         maxAgeSeconds: 3600,
-        methods: [
-            "GET",
-            "HEAD",
-            "PUT",
-            "POST",
-            "DELETE",
-        ],
+        methods: ["GET", "HEAD", "PUT", "POST", "DELETE",],
         origins: ["*"],
         responseHeaders: ["*"],
     }],
@@ -42,6 +37,8 @@ const ipAddress = new gcp.compute.GlobalAddress("site-lb-ip", {
     },
 )
 
+// const ipAddress = gcp.compute.getGlobalAddress({ name: "site-lb-ip" })
+
 const siteBackend = new gcp.compute.BackendBucket("site-backend-bucket", {
     description: "",
     bucketName: staticSiteBucket.name,
@@ -53,12 +50,29 @@ const network = new gcp.compute.Network("network")
 
 const firewall = new gcp.compute.Firewall("firewall", {
     network: network.id,
+    direction: "INGRESS",
     allows: [
-        {protocol: "tcp", ports: ["22"],},
-        {protocol: "tcp", ports: ["80"],},
-        {protocol: "tcp", ports: ["8080"],},
+        {protocol: "tcp", ports: ["22", "80", "443", "8080"],},
     ]
 })
+
+const router = new gcp.compute.Router("router", {
+    name: "router",
+    network: network.id,
+})
+
+const nat = new gcp.compute.RouterNat("nat", {
+    name: "nat",
+    router: router.name,
+    sourceSubnetworkIpRangesToNat: "ALL_SUBNETWORKS_ALL_IP_RANGES",
+    natIpAllocateOption: "AUTO_ONLY",
+    // natIps: [ipAddress.id]
+})
+
+
+const dockerImage = "gcr.io/cloud-marketplace/google/nginx1:latest"
+
+const startupScript = `docker run -d --restart always --network host --name main ${dockerImage}`
 
 const container_instance_metadata_script = `
 spec:
@@ -70,12 +84,18 @@ spec:
     restartPolicy: Always
 `
 
-const instanceTemplate = new gcp.compute.InstanceTemplate("template-1", {
-    name: "template-1",
+const image = gcp.compute.getImage({
+    project: "cos-cloud",
+    family: "cos-85-lts",
+    // project: "debian-cloud",
+    // family: "debian-9",
+});
+
+const instanceTemplate = new gcp.compute.InstanceTemplate("template", {
     disks: [{
         autoDelete: true,
         boot: true,
-        sourceImage: "cos-cloud/cos-85-lts",
+        sourceImage: image.then(it => it.selfLink),
     }],
     machineType: "e2-small",
     scheduling: {
@@ -88,6 +108,7 @@ const instanceTemplate = new gcp.compute.InstanceTemplate("template-1", {
     metadata: {
         "gce-container-declaration": container_instance_metadata_script,
     },
+    // metadataStartupScript: startupScript,
     serviceAccount: {
         email: "default",
         scopes: [
@@ -104,7 +125,9 @@ const instanceTemplate = new gcp.compute.InstanceTemplate("template-1", {
     // tags: options.tags,
 });
 
-const targetPool = new gcp.compute.TargetPool("client-pool", {});
+const targetPool = new gcp.compute.TargetPool("client-pool", {
+    region: region
+});
 const instanceGroupManager = new gcp.compute.InstanceGroupManager("instance-group-manager", {
     baseInstanceName: "be-instance",
     versions: [{
@@ -124,13 +147,13 @@ const instanceGroupManager = new gcp.compute.InstanceGroupManager("instance-grou
     ],
     targetPools: [targetPool.id],
     // statefulDisks: {},
-    targetSize: 0,
-    zone: "europe-west3-a"
+    targetSize: 1,
+    zone: igZone
 });
 
 const healthCheck = new gcp.compute.HealthCheck("health-check", {
     httpHealthCheck: {
-        port: 8080,
+        port: 80,
         // requestPath: "/health",
         requestPath: "/",
     },
@@ -174,7 +197,8 @@ const urlMap = new gcp.compute.URLMap("site-lb", {
         },
         {
             name: "app",
-            defaultService: groupBackend.id
+            defaultService: groupBackend.id,
+            defaultUrlRedirect: undefined,
             // defaultUrlRedirect: {
             //     hostRedirect: "google.com",
             //     stripQuery: true
@@ -217,6 +241,7 @@ const httpProxy = new gcp.compute.TargetHttpProxy("http-proxy", {
 const forwardingRule = new gcp.compute.GlobalForwardingRule("site-fe", {
     name: 'site-fe',
     portRange: '443-443',
+    // ipAddress: ipAddress.then(it => it.address),
     ipAddress: ipAddress.address,
     target: proxy.id,
 });
@@ -224,12 +249,16 @@ const forwardingRule = new gcp.compute.GlobalForwardingRule("site-fe", {
 const httpForwardingRule = new gcp.compute.GlobalForwardingRule("http-to-https", {
     name: 'http-to-https',
     portRange: '80',
+    // ipAddress: ipAddress.then(it => it.address),
     ipAddress: ipAddress.address,
     target: httpProxy.id,
 });
 
 
 export const bucketName = staticSiteBucket.url;
+// export const ip = ipAddress.then(it => it.address);
 export const ip = ipAddress.address;
+;
 // export const urlMapId = urlMap.id;
 // export const sslCertId = sslCertificate.id;
+// export const bucketName2 = bucket.url;
