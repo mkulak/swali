@@ -1,3 +1,6 @@
 config:
   gcp:project: swali-300214
   gcp:region: europe-west3
+  gcp:instance-group-zone: europe-west3-a
+  swali-gcp:swali-host: "swali.kvarto.net"
+  swali-gcp:app-host: "app.kvarto.net"

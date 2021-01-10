@@ -2,9 +2,8 @@ import * as pulumi from "@pulumi/pulumi";
 import * as gcp from "@pulumi/gcp";
 
 
-const region = "europe-west3"
-const igZone = "europe-west3-a"
-let host = "swali.kvarto.net";
+let gcpConfig = new pulumi.Config("gcp");
+let config = new pulumi.Config();
 
 const staticSiteBucket = new gcp.storage.Bucket("fe-static", {
     name: "fe-static",
@@ -15,7 +14,7 @@ const staticSiteBucket = new gcp.storage.Bucket("fe-static", {
         responseHeaders: ["*"],
     }],
     forceDestroy: true,
-    location: region,
+    location: gcpConfig.require("region"),
     storageClass: "REGIONAL",
     uniformBucketLevelAccess: true,
     website: {
@@ -107,6 +106,7 @@ const instanceTemplate = new gcp.compute.InstanceTemplate("template", {
     }],
     metadata: {
         "gce-container-declaration": container_instance_metadata_script,
+        // "shutdown-script": ""
     },
     // metadataStartupScript: startupScript,
     serviceAccount: {
@@ -126,7 +126,7 @@ const instanceTemplate = new gcp.compute.InstanceTemplate("template", {
 });
 
 const targetPool = new gcp.compute.TargetPool("client-pool", {
-    region: region
+    region: gcpConfig.require("region")
 });
 const instanceGroupManager = new gcp.compute.InstanceGroupManager("instance-group-manager", {
     baseInstanceName: "be-instance",
@@ -148,7 +148,7 @@ const instanceGroupManager = new gcp.compute.InstanceGroupManager("instance-grou
     targetPools: [targetPool.id],
     // statefulDisks: {},
     targetSize: 1,
-    zone: igZone
+    zone: gcpConfig.require("instance-group-zone")
 });
 
 const healthCheck = new gcp.compute.HealthCheck("health-check", {
@@ -178,11 +178,11 @@ const urlMap = new gcp.compute.URLMap("site-lb", {
     defaultService: siteBackend.id,
     hostRules: [
         {
-            hosts: [host],
+            hosts: [config.require("swali-host")],
             pathMatcher: "swali",
         },
         {
-            hosts: ["app.kvarto.net"],
+            hosts: [config.require("app-host")],
             pathMatcher: "app",
         }
     ],
@@ -209,13 +209,13 @@ const urlMap = new gcp.compute.URLMap("site-lb", {
 
 const sslCertificate = new gcp.compute.ManagedSslCertificate("swali-certificate", {
     name: "swali-certificate",
-    managed: {domains: [host],},
+    managed: {domains: [config.require("swali-host")],},
     type: "MANAGED",
 });
 
 const appSslCertificate = new gcp.compute.ManagedSslCertificate("app-certificate", {
     name: "app-certificate",
-    managed: {domains: ["app.kvarto.net"],},
+    managed: {domains: [config.require("app-host")],},
     type: "MANAGED",
 });
 
