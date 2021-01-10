@@ -1,0 +1,7 @@
+spec:
+  containers:
+    - name: c1
+      image: 'gcr.io/cloud-marketplace/google/nginx1:latest'
+      stdin: false
+      tty: false
+  restartPolicy: Always
