@@ -15,12 +15,12 @@ import {groupBackend} from "../instance-group/instance";
 
 let config = new Config();
 
-export const ipAddress = new GlobalAddress("site-lb-ip", {
-    name: "site-lb-ip",
-    addressType: 'EXTERNAL',
-})
+// export const ipAddress = new GlobalAddress("site-lb-ip", {
+//     name: "site-lb-ip",
+//     addressType: 'EXTERNAL',
+// })
 
-// const ipAddress = gcp.compute.getGlobalAddress({ name: "site-lb-ip" })
+export const ipAddress = gcp.compute.getGlobalAddress({ name: "site-lb-ip" })
 
 const httpUrlMap = new URLMap("http-map", {
     name: 'http-map',
@@ -52,8 +52,8 @@ const httpProxy = new gcp.compute.TargetHttpProxy("http-proxy", {
 const httpForwardingRule = new gcp.compute.GlobalForwardingRule("http-to-https", {
     name: 'http-to-https',
     portRange: '80',
-    // ipAddress: ipAddress.then(it => it.address),
-    ipAddress: ipAddress.address,
+    ipAddress: ipAddress.then(it => it.address),
+    // ipAddress: ipAddress.address,
     target: httpProxy.id,
 });
 
@@ -103,8 +103,8 @@ const proxy = new TargetHttpsProxy("site-lb-target-proxy", {
 const forwardingRule = new gcp.compute.GlobalForwardingRule("site-fe", {
     name: 'site-fe',
     portRange: '443-443',
-    // ipAddress: ipAddress.then(it => it.address),
-    ipAddress: ipAddress.address,
+    ipAddress: ipAddress.then(it => it.address),
+    // ipAddress: ipAddress.address,
     target: proxy.id,
 });
 
