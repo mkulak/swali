@@ -90,6 +90,20 @@ export const groupBackend = new gcp.compute.BackendService("group-backend", {
     protocol: "HTTP",
     timeoutSec: 5,
     healthChecks: healthCheck.id,
+    loadBalancingScheme: "EXTERNAL",
+    sessionAffinity: "GENERATED_COOKIE",
+    // localityLbPolicy: "RING_HASH",
+    // sessionAffinity: "HTTP_COOKIE",
+    // loadBalancingScheme: "INTERNAL_SELF_MANAGED",
+    // consistentHash: {
+    //     // httpCookie: {
+    //     //     ttl: {
+    //     //         seconds: 86400,
+    //     //     },
+    //     //     name: "app_balancing",
+    //     // },
+    //     httpHeaderName: "app_balancing"
+    // },
     backends: [{
         group: instanceGroupManager.instanceGroup,
     }],
