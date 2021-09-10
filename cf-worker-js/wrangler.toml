@@ -1,0 +1,6 @@
+name = "kjs"
+type = "webpack"
+account_id = "ec6a83af0792744ec213ba27b5b638fa"
+workers_dev = true
+route = ""
+zone_id = ""

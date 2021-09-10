@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "name": "kjs",
+  "version": "1.0.0",
+  "description": "Try to bring kotlin to CF workers  properly",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write '**/*.{js,css,json,md}'"
+  },
+  "author": "mkulak",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^1.18.2"
+  }
+}
