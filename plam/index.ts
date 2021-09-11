@@ -30,6 +30,14 @@ const goFun = new aws.lambda.Function("gohello", {
     timeout: 60,
 })
 
+const javaFun = new aws.lambda.Function("javahello", {
+    runtime: Runtime.Java11,
+    handler: "com.Handler",
+    code: new FileArchive("./jvm//build/distributions/aws-java-simple-http-endpoint.zip"),
+    role: role.arn,
+    timeout: 60,
+})
+
 
 const endpoint = new awsx.apigateway.API("hello", {
     routes: [
@@ -59,6 +67,11 @@ const endpoint = new awsx.apigateway.API("hello", {
             eventHandler: goFun,
         },
         {
+            path: "/jvm",
+            method: "GET",
+            eventHandler: javaFun,
+        },
+        {
             path: "/{route+}",
             method: "GET",
             eventHandler: jsFun,
@@ -67,4 +80,3 @@ const endpoint = new awsx.apigateway.API("hello", {
 })
 
 export const url = endpoint.url
-export const helloWorldUrl = pulumi.interpolate`${endpoint.url}World`
