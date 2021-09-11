@@ -1,6 +1,8 @@
 import * as aws from "@pulumi/aws"
 import * as awsx from "@pulumi/awsx"
 import * as pulumi from "@pulumi/pulumi"
+import {Runtime} from "@pulumi/aws/lambda";
+import {FileArchive} from "@pulumi/pulumi/asset/archive";
 
 const image = awsx.ecr.buildAndPushImage("sampleapp", {
     context: "./app",
@@ -13,9 +15,17 @@ new aws.iam.RolePolicyAttachment("lambdaFullAccess", {
     policyArn: aws.iam.ManagedPolicy.LambdaFullAccess,
 })
 
-const func = new aws.lambda.Function("helloworld", {
+const jsFun = new aws.lambda.Function("helloworld", {
     packageType: "Image",
     imageUri: image.imageValue,
+    role: role.arn,
+    timeout: 60,
+})
+
+const goFun = new aws.lambda.Function("gohello", {
+    runtime: Runtime.Go1dx,
+    handler: "handler",
+    code: new FileArchive("./go/handler.zip"),
     role: role.arn,
     timeout: 60,
 })
@@ -44,9 +54,14 @@ const endpoint = new awsx.apigateway.API("hello", {
         },
 
         {
+            path: "/go",
+            method: "GET",
+            eventHandler: goFun,
+        },
+        {
             path: "/{route+}",
             method: "GET",
-            eventHandler: func,
+            eventHandler: jsFun,
         }
     ]
 })
