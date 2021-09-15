@@ -30,10 +30,10 @@ const goFun = new aws.lambda.Function("gohello", {
     timeout: 60,
 })
 
-const javaFun = new aws.lambda.Function("javahello", {
+const jvmFun = new aws.lambda.Function("javahello", {
     runtime: Runtime.Java11,
-    handler: "com.Handler",
-    code: new FileArchive("./jvm//build/distributions/aws-java-simple-http-endpoint.zip"),
+    handler: "me.mkulak.Handler",
+    code: new FileArchive("./jvm//build/distributions/aws-java-simple-http-endpoint-new.zip"),
     role: role.arn,
     timeout: 60,
 })
@@ -69,7 +69,7 @@ const endpoint = new awsx.apigateway.API("hello", {
         {
             path: "/jvm",
             method: "GET",
-            eventHandler: javaFun,
+            eventHandler: jvmFun,
         },
         {
             path: "/{route+}",
