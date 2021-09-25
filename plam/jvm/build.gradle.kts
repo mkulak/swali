@@ -25,6 +25,8 @@ dependencies {
     implementation("com.amazonaws:aws-lambda-java-log4j:1.0.0")
     implementation("com.amazonaws:aws-lambda-java-core:1.2.0")
     implementation("com.amazonaws:aws-lambda-java-events:2.0.1")
+    implementation("software.amazon.awssdk:s3:2.17.42")
+
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.2")
     implementation("com.fasterxml.jackson.module:jackson-modules-java8:2.11.2")
@@ -52,13 +54,13 @@ tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "11"
         apiVersion = "1.5"
-        languageVersion = "1.5"
+        languageVersion = "1.6"
         freeCompilerArgs += "-Xopt-in=kotlin.time.ExperimentalTime"
     }
 }
 
 val buildZip by tasks.register<Zip>("buildZip") {
-    archiveBaseName.set("aws-java-simple-http-endpoint-new")
+    archiveBaseName.set("kt-lambda")
     archiveVersion.set("")
     from(tasks.named("compileKotlin"))
     from(tasks.named("processResources"))

@@ -4,9 +4,6 @@ import * as pulumi from "@pulumi/pulumi"
 import {Runtime} from "@pulumi/aws/lambda";
 import {FileArchive} from "@pulumi/pulumi/asset/archive";
 
-const image = awsx.ecr.buildAndPushImage("sampleapp", {
-    context: "./app",
-})
 const role = new aws.iam.Role("lambdaRole", {
     assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({ Service: "lambda.amazonaws.com" }),
 })
@@ -15,12 +12,16 @@ new aws.iam.RolePolicyAttachment("lambdaFullAccess", {
     policyArn: aws.iam.ManagedPolicy.LambdaFullAccess,
 })
 
-const jsFun = new aws.lambda.Function("helloworld", {
-    packageType: "Image",
-    imageUri: image.imageValue,
-    role: role.arn,
-    timeout: 60,
-})
+// const image = awsx.ecr.buildAndPushImage("sampleapp", {
+//     context: "./app",
+// })
+
+// const jsFun = new aws.lambda.Function("helloworld", {
+//     packageType: "Image",
+//     imageUri: image.imageValue,
+//     role: role.arn,
+//     timeout: 60,
+// })
 
 const goFun = new aws.lambda.Function("gohello", {
     runtime: Runtime.Go1dx,
@@ -33,7 +34,7 @@ const goFun = new aws.lambda.Function("gohello", {
 const jvmFun = new aws.lambda.Function("javahello", {
     runtime: Runtime.Java11,
     handler: "me.mkulak.Handler",
-    code: new FileArchive("./jvm//build/distributions/aws-java-simple-http-endpoint-new.zip"),
+    code: new FileArchive("./jvm/build/distributions/kt-lambda.zip"),
     role: role.arn,
     timeout: 60,
 })
@@ -41,13 +42,10 @@ const jvmFun = new aws.lambda.Function("javahello", {
 
 const endpoint = new awsx.apigateway.API("hello", {
     routes: [
-        // Serve static files from the `www` folder (using AWS S3)
         {
             path: "/site",
             localPath: "www",
         },
-
-        // Serve a simple REST API on `GET /name` (using AWS Lambda)
         {
             path: "/source",
             method: "GET",
@@ -67,16 +65,42 @@ const endpoint = new awsx.apigateway.API("hello", {
             eventHandler: goFun,
         },
         {
-            path: "/jvm",
-            method: "GET",
+            path: "/files/{filekey+}",
+            method: "ANY",
             eventHandler: jvmFun,
         },
-        {
-            path: "/{route+}",
-            method: "GET",
-            eventHandler: jsFun,
-        }
+        // {
+        //     path: "/{route+}",
+        //     method: "GET",
+        //     eventHandler: jsFun,
+        // }
     ]
 })
 
+const bucket = new aws.s3.Bucket("plum-files", {
+    bucket: "plum-files",
+    acl: "private"
+});
+
+const lambdaS3Policy = new aws.iam.Policy(`post-to-s3-policy`, {
+    description: "IAM policy for Lambda to interact with S3",
+    path: "/",
+    policy: bucket.arn.apply(bucketArn => `{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "s3:PutObject", 
+      "Resource": "${bucketArn}/*",
+      "Effect": "Allow"
+    }
+  ]}`)
+})
+
+// Attach the policies to the Lambda role
+new aws.iam.RolePolicyAttachment(`post-to-s3-policy-attachment`, {
+    policyArn: lambdaS3Policy.arn,
+    role: role.name
+})
+
+export const bucketArn = bucket.arn;
 export const url = endpoint.url
